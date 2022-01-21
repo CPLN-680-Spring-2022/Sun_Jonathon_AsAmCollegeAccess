@@ -1,0 +1,282 @@
+---
+title: "Capstone"
+author: "Jonathon Sun"
+date: "1/14/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus)
+
+register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
+options(scipen = 999)
+options(scipen =  "sf")
+
+source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
+```
+
+# Datasets
+
+```{r}
+# IPEDS Post-secondary institutions
+Remove <- c("OBJECTID","CBSA","NMCBSA","CBSATYPE","CSA","SLDU","SCHOOLYEAR","NECTA","NMNECTA","CD","SLDL","NMCSA","LOCALE")
+
+Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
+                    select(!Remove) %>%
+                    filter(STATE == "PA") %>%
+                    filter(NMCNTY == "Philadelphia County") %>%
+                    st_as_sf()
+
+# TIGRIS Philadelphia Census Tracts -------------------------------
+Philadelphia_tracts <- tracts(state = "PA", county = "Philadelphia County") %>%
+  st_transform(st_crs(Universities))
+
+ggplot() +
+  geom_sf(data = Philadelphia_tracts)
+
+# Census Tract centroids as points -------------------------------------
+Philadelphia_Centroids <- Philadelphia_tracts %>%
+  st_centroid() %>%
+  st_transform(st_crs(Universities))
+
+ggplot() +
+  geom_sf(data = Philadelphia_Centroids)
+
+# TIGRIS Philadelphia School Districts ---------------------------------
+Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
+  st_transform(st_crs(Universities)) %>%
+  st_intersection(st_union(Philadelphia_tracts))
+
+ggplot() +
+  geom_sf(data = Philadelphia_School_District)
+
+# Safegraph data on Education
+Philly_Education <- read.csv("Data\\geometry.csv") %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, agr = "constant") %>%
+  st_transform(crs = "EPSG:4326")%>%
+  select(!c(1,2,4,6,7,9,10,11,13,14)) %>%
+  mutate(Higher_Education = ifelse(location_name %in% Universities$NAME | 
+                                   street_address %in% Universities$STREET |
+                                    grepl("University of Penn", location_name) == TRUE, TRUE, FALSE),
+         Free_Library = ifelse(grepl("Free Library", location_name) == TRUE, TRUE, FALSE),
+         Kumon = ifelse(grepl("Kumon", location_name) == TRUE, TRUE, FALSE),
+         High_School = ifelse(grepl("Hs", location_name) == TRUE, TRUE, FALSE),
+         Middle_School = ifelse(grepl("\\<Ms\\>", location_name) == TRUE, TRUE, FALSE),
+         Elementary_School = ifelse(grepl("\\<Sch\\>", location_name) == TRUE, TRUE, FALSE),
+         Charter_School = ifelse(grepl("\\<Cs\\>", location_name) == TRUE, TRUE, FALSE))
+
+Philly_Education_Long <- pivot_longer(Philly_Education, 7:13, names_to = "Type_of_Ed", values_to = "Type_of_Ed_Yes") %>%
+                              filter(Type_of_Ed_Yes == TRUE) %>%
+                              select(!Type_of_Ed_Yes)
+Philly_Education_Long_FALSE <- pivot_longer(Philly_Education, 7:13, names_to = "Type_of_Ed", values_to = "Type_of_Ed_Yes") %>%
+                              filter(Type_of_Ed_Yes == FALSE) %>%
+                              group_by(location_name, street_address) %>%
+                              summarize(n = n()) %>%
+                              filter(n > 6) %>%
+                              mutate(Type_of_Ed = "Not_Categorized") %>%
+                              left_join(Philly_Education %>%
+                                            st_drop_geometry() %>%
+                                            select(!7:(ncol(Philly_Education)-1)), 
+                                        by = c("location_name","street_address")) %>%
+                              select(!c("Higher_Education","n"))
+Philly_Education_Long <- rbind(Philly_Education_Long,Philly_Education_Long_FALSE)
+
+# Tidycensus
+
+
+
+```
+
+
+# Tidytransit
+
+I'm using the Tidytransit package to make sure that the gtfs files work. Currently they work, we will see if they continue to work. 
+
+```{r eval=FALSE, include=FALSE}
+GTFS_path <- c("OTP\\graphs\\default\\google_bus.zip")
+
+GTFS <- read_gtfs(GTFS_path)
+
+validation_result <- attr(GTFS, "validation_result")
+head(validation_result)
+
+GTFS_path <- c("OTP\\graphs\\default\\google_rail.zip")
+
+GTFS <- read_gtfs(GTFS_path)
+
+validation_result <- attr(GTFS, "validation_result")
+head(validation_result)
+
+#This line below attempts to pull the data  feed data from the github directly it doesn't work. 
+#head(feedlist)
+#glimpse(feedlist)
+#Philly <- feedlist %>%
+#  filter(loc_n == "Philadelphia") %>%
+#  pull(url_d) %>%
+#  read_gtfs()
+```
+
+
+# Open Trip Planner
+We will build an example graph for the Isle of Wight using some example data provided for the package. A graph is what OTP uses to find routes, and must be built out of the raw data provided. Please note the demo data has been modified for teaching purposes and should not be used for analysis.
+
+## Creating a folder to store OTP and its data
+OTP expects its data to be stored in a specific structure, see building your own otp graph for more details. We will make a folder called OTP in the temporary directory.
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+path_data <- file.path("OTP")
+dir.create(path_data) 
+
+path_otp <- otp_dl_jar()
+
+#log1 <- otp_build_graph(otp = path_otp , dir = path_data, memory = 10240) 
+
+
+#By default, R will assign OTP 2GB of memory to build the graph. For larger areas, you may need more memory. You can use the memory argument to set the memory allocation in MB. For example, to allocate 10GB, you would use:
+
+
+#log1 <- otp_build_graph(otp = path_otp, dir = path_data, memory = 10240) 
+
+
+#Note that you cannot allocate more memory than you have RAM, and if you use 32 Bit Java you cannot allocate more than 3GB. It is possible to run OTP in just 1GB of memory for very small areas (including the demo dataset).
+
+# Launch OTP and load the graph
+
+#The next step is to start up your OTP server, running the router called ‘default’. OTP will load the graph you created into memory, and you will then be able to plan multi-modal routes using the web interface. Run the following command:
+
+log2 <- otp_setup(otp = path_otp, dir = path_data)
+
+otpcon <- otp_connect(hostname =  "localhost",
+                      router = "default",
+                      port = 8080)
+
+```
+
+## Simple Features
+
+Whatver you get out of the OTP instance, you need to flip around when you put it into the OTP planner. I don't know which one is longitude and latitude. 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+Philadelphia <- tigris::counties(state = "PA") %>%
+                  filter(NAMELSAD == "Philadelphia County")
+
+Vietlead <- c(-75.1536303,39.9128769)
+
+route <- otp_plan(otpcon,
+                  fromPlace = c(-75.17670, 39.96870),
+                  toPlace = Vietlead,
+                  mode = c("WALK","TRANSIT"))
+
+
+ggplot() +
+  geom_sf(data = route) +
+  geom_sf(data = Philadelphia,
+          fill = "transparent")
+```
+
+## Avanced Features
+
+Showing multiple routes from one place to multiple locations. 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+Locations <- c("AAU Philadelphia","Vietlead Philadelphia","Chinatown Philadelphia")
+
+locations_LatLon <- geocode(location = Locations)
+locations_Shp <- locations_LatLon %>% 
+  rename(Longitude = lon,
+         Latitude = lat) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
+  st_transform(st_crs(Universities)) %>%
+  cbind(Locations)
+
+routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = Universities,
+                   toPlace = Vietlead,
+                   mode = c("WALK","TRANSIT"))
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot() +
+  geom_sf(data = routes, aes(color = duration)) +
+  geom_sf(data = Philadelphia,
+          fill = "transparent") +
+  labs(title = "Universities to Vietlead") +
+  mapTheme()
+  
+
+```
+
+# Batched 
+
+This chunk can run. It just runs for a while. It needs to be refined a bit more. 
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+Locations <- rbind(Universities%>%
+        select(NAME),
+      locations_Shp %>%
+        rename(NAME = Locations),
+      Philadelphia_Centroids %>%
+        select(NAME))
+
+toPlace   = Locations[rep(seq(1, nrow(Locations)), times = nrow(Locations)),]
+fromPlace = Locations[rep(seq(1, nrow(Locations)), each  = nrow(Locations)),]
+
+routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = toPlace,
+                   fromID = fromPlace$NAME,
+                   toID = toPlace$NAME,
+                   ncores = 6)
+```
+
+## Isochrones
+
+```{r}
+Values <- c(15,30,45,60,75,90)
+
+
+Isochrone <- otp_isochrone(otpcon = otpcon,
+                           fromPlace = Vietlead,
+                           mode = c("WALK","TRANSIT"),
+                           maxWalkDistance = 20,
+                           date_time = as.POSIXct(strptime("2022-01-20 17:00","%Y-%m-%d %H:%M")),
+                           cutoffSec = Values)
+
+library(tmap)
+tmap_mode("view")
+
+
+map <- tm_shape(Isochrone) +  # Build the map
+  tm_borders()
+map           
+```
+
+
+
+# Safegraph Data
+
+## Geometry Data
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot() +
+  geom_sf(data = Philly_Education_Long %>%
+                    filter(!Type_of_Ed == "Not_Categorized"), aes(color = Type_of_Ed)) +
+  geom_sf(data = Philadelphia, 
+          fill = "transparent") +
+  labs(title = "Education Institutions in Philadelphia",
+       subtitle = "By institutional category") +
+  mapTheme()
+```
+
+
+```{r}
+
+file_names <- list.files("zip_out")
+files <- paste0(directory,"/zip_out/",file_names,"/home_panel_summary.csv")
+
+```
