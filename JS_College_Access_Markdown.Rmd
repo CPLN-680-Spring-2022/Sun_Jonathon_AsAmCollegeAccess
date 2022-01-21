@@ -96,7 +96,7 @@ Philly_Education_Long <- rbind(Philly_Education_Long,Philly_Education_Long_FALSE
 
 # Tidytransit
 
-I'm using the Tidytransit package to make sure that the gtfs files work. Currently they work, we will see if they continue to work. 
+I'm using the Tidytransit package to make sure that the gtfs files work. Currently they work, we will see if they continue to work. Test
 
 ```{r eval=FALSE, include=FALSE}
 GTFS_path <- c("OTP\\graphs\\default\\google_bus.zip")
