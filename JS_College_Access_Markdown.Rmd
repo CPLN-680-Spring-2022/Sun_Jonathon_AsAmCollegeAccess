@@ -193,8 +193,35 @@ f <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", va
 ACS.Long <- rbind(ACS.Long,f)  
 }
 
+#Geocoded data using Google Maps ---------------------------------------
 
+Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia")
+
+locations_LatLon <- geocode(location = Locations)
+locations_Shp <- locations_LatLon %>% 
+  rename(Longitude = lon,
+         Latitude = lat) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
+  st_transform(st_crs(Universities)) %>%
+  cbind(Locations)
 ```
+
+# Summary Statistics
+
+## Geometry Data
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot() +
+  geom_sf(data = Philly_Education_Long %>%
+                    filter(!Type_of_Ed == "Not_Categorized"), aes(color = Type_of_Ed,
+                                                                  shape = Type_of_Ed)) +
+  geom_sf(data = Philadelphia_tracts, 
+          fill = "transparent") +
+  geom_sf(data = locations_Shp) +
+  labs(title = "Education Institutions in Philadelphia",
+       subtitle = "By institutional category") +
+  mapTheme()
+```
+
 
 
 # Tidytransit
@@ -362,19 +389,6 @@ map
 
 
 
-# Safegraph Data
-
-## Geometry Data
-```{r echo=TRUE, message=FALSE, warning=FALSE}
-ggplot() +
-  geom_sf(data = Philly_Education_Long %>%
-                    filter(!Type_of_Ed == "Not_Categorized"), aes(color = Type_of_Ed)) +
-  geom_sf(data = Philadelphia, 
-          fill = "transparent") +
-  labs(title = "Education Institutions in Philadelphia",
-       subtitle = "By institutional category") +
-  mapTheme()
-```
 
 
 ```{r}
