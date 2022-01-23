@@ -297,6 +297,8 @@ Philadelphia <- tigris::counties(state = "PA") %>%
                   filter(NAMELSAD == "Philadelphia County")
 
 Vietlead <- c(-75.1536303,39.9128769)
+toPlace <- c(-75.15661,39.98113)
+
 
 route <- otp_plan(otpcon,
                   fromPlace = c(-75.17670, 39.96870),
@@ -314,8 +316,10 @@ ggplot() +
 
 Showing multiple routes from one place to multiple locations. 
 
+Basically, the batched routes only work for different kinds of transporatation combinations. I thought it was a syntax error but for some modes of transportation things work and other times they don't 
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
-Locations <- c("AAU Philadelphia","Vietlead Philadelphia","Chinatown Philadelphia")
+Locations <- c("AAU Philadelphia","Vietlead Philadelphia","Chinatown Philadelphia","Mayflower Bakery Philadelphia","Bread Top House Philadelphia")
 
 locations_LatLon <- geocode(location = Locations)
 locations_Shp <- locations_LatLon %>% 
@@ -325,10 +329,54 @@ locations_Shp <- locations_LatLon %>%
   st_transform(st_crs(Universities)) %>%
   cbind(Locations)
 
+getElement(locations_LatLon,)
+a <- -75.15616 
+b <- 39.95909
+
+a <- rbind(a,b)
+getElement(a,1)
+
+toPlace <- as.numeric(locations_LatLon[1,1:2])
+toPlace <- c(-75.15661,39.98113)
+
+toPlace
+toPlace <- locations_Shp[5,1:2]
+f <- Universities %>%
+              select(2,12) %>%
+              slice(1)
+
+Vietlead <- c(-75.1561629,39.9590867)
+Vietlead
+
+fromPlace <- Philadelphia_Centroids %>%
+                select() %>%
+                slice(1)
+
+
 routes <- otp_plan(otpcon = otpcon,
                    fromPlace = Universities,
                    toPlace = Vietlead,
                    mode = c("WALK","TRANSIT"))
+
+fromPlace <- as.numeric(locations_LatLon[5,1:2])
+
+i <- 380
+fromPlace <- Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(i)
+
+routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","BUS"))
+
+
+ggplot() +
+  geom_sf(data = Philadelphia) +
+  geom_sf(data = routes) +
+  geom_sf(data = Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(i))
 ```
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -353,6 +401,9 @@ Locations <- rbind(Universities%>%
         rename(NAME = Locations),
       Philadelphia_Centroids %>%
         select(NAME))
+
+Locations <- Locations %>%
+              mutate(id = row_number())
 
 toPlace   = Locations[rep(seq(1, nrow(Locations)), times = nrow(Locations)),]
 fromPlace = Locations[rep(seq(1, nrow(Locations)), each  = nrow(Locations)),]
