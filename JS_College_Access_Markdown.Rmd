@@ -195,6 +195,15 @@ ACS.Long <- rbind(ACS.Long,f)
 
 #Geocoded data using Google Maps ---------------------------------------
 
+ACS.Long <- ACS.Long %>%
+  mutate(Race_Ethnicity = str_remove(Race_Ethnicity,"Total_Population"),
+         Race_Ethnicity = str_replace(Race_Ethnicity,"Chinese_,_except_Taiwanese","Chinese,_except_Taiwanese"),
+         Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_including_Some_other_race","Two_or_more_races_Two_races_including_Some_other_race"),
+         Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_excluding_Some_other_race,_and_three_or_more_races","Two_or_more_races_Two_races_excluding_Some_other_race,_and_three_or_more_races"))
+
+unique(f$Race_Ethnicity)
+
+
 Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia")
 
 locations_LatLon <- geocode(location = Locations)
@@ -219,6 +228,11 @@ ggplot() +
   geom_sf(data = locations_Shp) +
   labs(title = "Education Institutions in Philadelphia",
        subtitle = "By institutional category") +
+  mapTheme()
+
+ggplot() +
+  geom_sf(data = ACS.Long, aes(fill = Frequency)) +
+  facet_wrap(~Race_Ethnicity) +
   mapTheme()
 ```
 
@@ -266,7 +280,7 @@ dir.create(path_data)
 
 path_otp <- otp_dl_jar()
 
-#log1 <- otp_build_graph(otp = path_otp , dir = path_data, memory = 10240) 
+log1 <- otp_build_graph(otp = path_otp , dir = path_data, memory = 10240) 
 
 
 #By default, R will assign OTP 2GB of memory to build the graph. For larger areas, you may need more memory. You can use the memory argument to set the memory allocation in MB. For example, to allocate 10GB, you would use:
@@ -312,73 +326,6 @@ ggplot() +
           fill = "transparent")
 ```
 
-## Avanced Features
-
-Showing multiple routes from one place to multiple locations. 
-
-Basically, the batched routes only work for different kinds of transporatation combinations. I thought it was a syntax error but for some modes of transportation things work and other times they don't 
-
-```{r message=FALSE, warning=FALSE, include=FALSE}
-Locations <- c("AAU Philadelphia","Vietlead Philadelphia","Chinatown Philadelphia","Mayflower Bakery Philadelphia","Bread Top House Philadelphia")
-
-locations_LatLon <- geocode(location = Locations)
-locations_Shp <- locations_LatLon %>% 
-  rename(Longitude = lon,
-         Latitude = lat) %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
-  st_transform(st_crs(Universities)) %>%
-  cbind(Locations)
-
-getElement(locations_LatLon,)
-a <- -75.15616 
-b <- 39.95909
-
-a <- rbind(a,b)
-getElement(a,1)
-
-toPlace <- as.numeric(locations_LatLon[1,1:2])
-toPlace <- c(-75.15661,39.98113)
-
-toPlace
-toPlace <- locations_Shp[5,1:2]
-f <- Universities %>%
-              select(2,12) %>%
-              slice(1)
-
-Vietlead <- c(-75.1561629,39.9590867)
-Vietlead
-
-fromPlace <- Philadelphia_Centroids %>%
-                select() %>%
-                slice(1)
-
-
-routes <- otp_plan(otpcon = otpcon,
-                   fromPlace = Universities,
-                   toPlace = Vietlead,
-                   mode = c("WALK","TRANSIT"))
-
-fromPlace <- as.numeric(locations_LatLon[5,1:2])
-
-i <- 380
-fromPlace <- Philadelphia_Centroids %>%
-                          select() %>%
-                          slice(i)
-
-routes <- otp_plan(otpcon = otpcon,
-                   fromPlace = fromPlace,
-                   toPlace = Universities,
-                   mode = c("WALK","BUS"))
-
-
-ggplot() +
-  geom_sf(data = Philadelphia) +
-  geom_sf(data = routes) +
-  geom_sf(data = Philadelphia_Centroids %>%
-                          select() %>%
-                          slice(i))
-```
-
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
 ggplot() +
   geom_sf(data = routes, aes(color = duration)) +
@@ -389,8 +336,74 @@ ggplot() +
   
 
 ```
+## Avanced Features
 
-# Batched 
+Showing multiple routes from one place to multiple locations. 
+
+Basically, the batched routes only work for different kinds of transporatation combinations. I thought it was a syntax error but for some modes of transportation things work and other times they don't 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia","Chinatown Philadelphia","Mayflower Bakery Philadelphia","Bread Top House Philadelphia")
+
+locations_LatLon <- geocode(location = Locations)
+locations_Shp <- locations_LatLon %>% 
+  rename(Longitude = lon,
+         Latitude = lat) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
+  st_transform(st_crs(Universities)) %>%
+  cbind(Locations)
+
+routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = Universities,
+                   toPlace = Vietlead,
+                   mode = c("WALK","TRANSIT"))
+
+fromPlace <- as.numeric(locations_LatLon[1,1:2])
+
+routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-25 12:00","%Y-%m-%d %H:%M")))
+
+
+# Philadelphia Centroids to Universities -----------------------------------------------
+
+fromPlace <- fromPlace <- as.numeric(locations_LatLon[1,1:2])
+
+Locations_routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-24 12:00","%Y-%m-%d %H:%M"))) %>%
+                    mutate(Start_Location = Locations[1]) 
+
+for(i in 2:nrow(locations_LatLon)) {
+  tryCatch({
+    
+fromPlace <- fromPlace <- as.numeric(locations_LatLon[i,1:2])
+
+    A <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-24 12:00","%Y-%m-%d %H:%M"))) %>%
+        mutate(Start_Location = Locations[i]) 
+
+   Locations_routes <- rbind(Locations_routes,A)
+   
+    
+  }, error=function(e){cat("ERROR: ", conditionMessage(e), "\n")})
+
+}
+
+```
+
+
+# Appendix, don't run this code ------------------------------------
+
+
+## Batched 
 
 This chunk can run. It just runs for a while. It needs to be refined a bit more. 
 
@@ -414,6 +427,81 @@ routes <- otp_plan(otpcon = otpcon,
                    fromID = fromPlace$NAME,
                    toID = toPlace$NAME,
                    ncores = 6)
+```
+
+Not batched, looped
+
+```{r This chunk needs fixing, eval=FALSE, include=FALSE}
+# Philadelphia Centroids to Universities -----------------------------------------------
+
+Reconnect <- seq(from = 8, to = nrow(Philadelphia_Centroids), by = 20)
+
+fromPlace <- Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(1) 
+
+Census_routes <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-24 12:00","%Y-%m-%d %H:%M")))  
+                  
+
+for(i in 2:nrow(Philadelphia_Centroids)) {
+  if(i %in% Reconnect == TRUE) {
+    
+    log2 <- otp_setup(otp = path_otp, dir = path_data)
+
+    otpcon <- otp_connect(hostname =  "localhost",
+                          router = "default",
+                          port = 8080)
+    
+      tryCatch({
+    
+    fromPlace <- Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(i)
+
+    A <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-24 12:00","%Y-%m-%d %H:%M")))
+
+   Census_routes <- rbind(Census_routes,A)
+   
+    
+  }, error=function(e){cat("ERROR: ", conditionMessage(e), "\n")})
+  }
+  else if (i %in% Reconnect == FALSE) {
+    tryCatch({
+    
+    fromPlace <- Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(i)
+
+    A <- otp_plan(otpcon = otpcon,
+                   fromPlace = fromPlace,
+                   toPlace = Universities,
+                   mode = c("WALK","TRANSIT"),
+                   date_time = as.POSIXct(strptime("2022-01-24 12:00","%Y-%m-%d %H:%M")))
+
+   Census_routes <- rbind(Census_routes,A)
+   
+    
+  }, error=function(e){cat("ERROR: ", conditionMessage(e), "\n")})
+    
+    
+  }
+}
+
+
+ggplot() +
+  geom_sf(data = Philadelphia) +
+  geom_sf(data = routes) +
+  geom_sf(data = Philadelphia_Centroids %>%
+                          select() %>%
+                          slice(i))
 ```
 
 ## Isochrones
