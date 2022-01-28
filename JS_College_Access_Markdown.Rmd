@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 	warning = FALSE,
 	include = FALSE
 )
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl)
 
 register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
 options(scipen = 999)
@@ -210,47 +210,163 @@ locations_Shp <- locations_LatLon %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
   st_transform(st_crs(Universities)) %>%
   cbind(Locations)
+
+# IPEDS Race Enrollment Data
+FE <- list.files("Data/IPEDS Fall Enrollment Data")
+files <- paste0("Data/IPEDS Fall Enrollment Data/",FE)
+
+Columns <- c("unitid",
+             "efalevel",
+             "line",
+             "section",
+             "lstudy",
+             "efrace17",
+             "efrace18",
+             "efrace19",
+             "efrace20",
+             "efrace21",
+             "efrace22",
+             "efrace23",
+             "efrace24")
+
+Years <- seq(from = 2002, to = 2020, by = 1)
+
+Fall_Enrollment <- read_csv(files[1]) %>%
+                      select(Columns) %>%
+                      rename_with(tolower) %>%
+                      mutate(Years = Years[1])
+
+
+for(i in 2:6){  
+A <- read_csv(files[i]) %>%
+                      rename_with(tolower) %>%
+                      select(Columns) %>%
+                      mutate(Years = Years[i])
+
+Fall_Enrollment <- rbind(Fall_Enrollment,A)                      
+}  
+
+
+## IPEDS data has two different naming conventions ------
+
+Colnames2007 <- c("unitid",
+                  "efalevel",
+                  "line",
+                  "section",
+                  "lstudy",
+                  "efnralt",
+                  "efbkaat",
+                  "efaiant",
+                  "efasiat",
+                  "efhispt",
+#                 "efrace22",
+                  "efunknt",
+                  "eftotlt")
+
+A <- read_csv(files[7]) %>%
+                      rename_with(tolower) %>%
+                      mutate(Years = Years[i]) %>%
+                      select(starts_with("ef"))
+colnames(A)
+
+A <- read_csv(files[7]) %>%
+                      rename_with(tolower) %>%
+                      select(Colnames2007) %>%
+                      mutate(Years = Years[i])
+
+for(i in 7:length(files)){  
+B <- read_csv(files[i]) %>%
+                      rename_with(tolower) %>%
+                      select(Colnames2007) %>%
+                      mutate(Years = Years[i])
+
+A <- rbind(A,B)
+rm(B)
+}  
+col.from <- Colnames2007
+cols.to <- Columns[-11]
+
+A <- A %>%
+      rename_at(vars(col.from), function(x) cols.to) 
+
+df_clean <- rbind(
+  Fall_Enrollment %>%
+  filter(efalevel %in% c(23)) %>% 
+  select(unitid, starts_with("ef"),Years) %>%
+  pivot_longer(starts_with("ef")) %>%
+  mutate(Level_Student = "Undergraduate"),
+  Fall_Enrollment %>%
+  filter(efalevel %in% c(32)) %>% 
+  select(unitid, starts_with("ef"),Years) %>%
+  pivot_longer(starts_with("ef")) %>%
+  mutate(Level_Student = "Graduate"))
+
+A <- rbind(
+  A %>%
+  filter(efalevel %in% c(23)) %>% 
+  select(unitid, starts_with("ef"),Years) %>%
+  pivot_longer(starts_with("ef")) %>%
+  mutate(Level_Student = "Undergraduate"),
+  A %>%
+  filter(efalevel %in% c(32)) %>% 
+  select(unitid, starts_with("ef"),Years) %>%
+  pivot_longer(starts_with("ef")) %>%
+  mutate(Level_Student = "Graduate"))
+
+IPEDS_Race <- rbind(df_clean, A) %>%
+              filter(!name %in% c("efalevel")) %>%
+              mutate(name = str_replace(name,"efrace17","Nonresident alien"),
+                     name = str_replace(name,"efrace18","Black non-Hispanic"),
+                     name = str_replace(name,"efrace19","American Indian/Alaska Native"),
+                     name = str_replace(name,"efrace20","Asian or Pacific Islander "),
+                     name = str_replace(name,"efrace21","Hispanic"),
+                     name = str_replace(name,"efrace22","White non-Hispanic"),
+                     name = str_replace(name,"efrace23","Race/ethnicity unknown"),
+                     name = str_replace(name,"efrace24","Total_Enrollment"),) %>%
+             rename(Race = name,
+                    Frequency = value)
+
+
+#Carnegie Classification ---------------------
+FE <- list.files("Data/Carnegie_Classification")
+files <- paste0("Data/Carnegie_Classification/",FE)
+
+Carnegie_Variables <- read_xlsx(files[2], 3)
+
+Carnegie_Variables <- Carnegie_Variables %>%
+                        fill(Variable, Label...2) %>%
+                        mutate(Variable = toupper(Variable),
+                               Value = as.numeric(Value)) %>%
+                        filter(grepl("BASIC",Variable)) 
+
+Carnegie_Classification <- read_xlsx(files[2], 4) %>%
+                              select(1, starts_with("basic")) 
+
+Recode <- Carnegie_Variables %>%
+            filter(Variable == "BASIC2021") %>%
+            mutate(Numeric_code = Value + 1)
+
+Carnegie_Classification <- Carnegie_Classification%>%
+                            mutate(basic2021 = basic2021 + 1,
+                                   Carnegie_Classifcation2021 = recode(basic2021, !!!Recode$Label...4))
+
+IPEDS_Race <- left_join(IPEDS_Race,
+                          Carnegie_Classification %>%
+                            select(unitid,Carnegie_Classifcation2021),
+                          join_by = "unitid")
+
+Universities <- left_join(Universities %>%
+                    mutate(UNITID = as.numeric(UNITID)),
+                  IPEDS_Race %>%
+                    dplyr::rename_with(toupper), 
+                  by = "UNITID","NAME")
 ```
 
-# STM
 
-```{r STM}
-# Page 7 instructions https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf
-
-processed <- textProcessor(Philly_Education_Long$location_name, metadata = Philly_Education_Long)
-out <- prepDocuments(processed$documents, processed$vocab, processed$meta)
-docs <- out$documents
-vocab <- out$vocab
-meta <- out$meta
-
-#Page 8
-plotRemoved(processed$documents, lower.thresh = seq(1, 200, by = 100)) #Clears infrequent words
-out <- prepDocuments(processed$documents, processed$vocab, processed$meta, lower.thresh = 15)
-
-#Page 9
-poliblogPrevFit <- stm(documents = out$documents, 
-                       vocab = out$vocab, 
-                       K = 20, 
-                       max.em.its = 75, 
-                       data = out$meta, 
-                       init.type = "Spectral")
-
-poliblogSelect <- selectModel(out$documents, out$vocab, K = 20, 
-                              max.em.its = 75, 
-                              data = out$meta, 
-                              runs = 20, 
-                              seed = 8458159)
-
-plotModels(poliblogSelect, pch=c(1,2,3,4), legend.position="bottomright")
-
-storage <- searchK(out$documents, 
-                   out$vocab, 
-                   K = c(7, 10),
-                   data = meta)
-
-
-```
 # Summary Statistics
+## Higher Education Enrollment Data
+
+
 
 ## Geometry Data
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
