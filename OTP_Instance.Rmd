@@ -57,7 +57,7 @@ dir.create(path_data)
 
 path_otp <- otp_dl_jar()
 
-log1 <- otp_build_graph(otp = path_otp , dir = path_data, memory = 10240) 
+#log1 <- otp_build_graph(otp = path_otp , dir = path_data, memory = 10240) 
 
 
 #By default, R will assign OTP 2GB of memory to build the graph. For larger areas, you may need more memory. You can use the memory argument to set the memory allocation in MB. For example, to allocate 10GB, you would use:

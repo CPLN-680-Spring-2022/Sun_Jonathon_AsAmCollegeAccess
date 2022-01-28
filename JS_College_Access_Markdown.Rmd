@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 	warning = FALSE,
 	include = FALSE
 )
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm)
 
 register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
 options(scipen = 999)
@@ -201,9 +201,6 @@ ACS.Long <- ACS.Long %>%
          Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_including_Some_other_race","Two_or_more_races_Two_races_including_Some_other_race"),
          Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_excluding_Some_other_race,_and_three_or_more_races","Two_or_more_races_Two_races_excluding_Some_other_race,_and_three_or_more_races"))
 
-unique(f$Race_Ethnicity)
-
-
 Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia")
 
 locations_LatLon <- geocode(location = Locations)
@@ -215,6 +212,44 @@ locations_Shp <- locations_LatLon %>%
   cbind(Locations)
 ```
 
+# STM
+
+```{r STM}
+# Page 7 instructions https://cran.r-project.org/web/packages/stm/vignettes/stmVignette.pdf
+
+processed <- textProcessor(Philly_Education_Long$location_name, metadata = Philly_Education_Long)
+out <- prepDocuments(processed$documents, processed$vocab, processed$meta)
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+
+#Page 8
+plotRemoved(processed$documents, lower.thresh = seq(1, 200, by = 100)) #Clears infrequent words
+out <- prepDocuments(processed$documents, processed$vocab, processed$meta, lower.thresh = 15)
+
+#Page 9
+poliblogPrevFit <- stm(documents = out$documents, 
+                       vocab = out$vocab, 
+                       K = 20, 
+                       max.em.its = 75, 
+                       data = out$meta, 
+                       init.type = "Spectral")
+
+poliblogSelect <- selectModel(out$documents, out$vocab, K = 20, 
+                              max.em.its = 75, 
+                              data = out$meta, 
+                              runs = 20, 
+                              seed = 8458159)
+
+plotModels(poliblogSelect, pch=c(1,2,3,4), legend.position="bottomright")
+
+storage <- searchK(out$documents, 
+                   out$vocab, 
+                   K = c(7, 10),
+                   data = meta)
+
+
+```
 # Summary Statistics
 
 ## Geometry Data
@@ -235,13 +270,6 @@ ggplot() +
   facet_wrap(~Race_Ethnicity) +
   mapTheme()
 ```
-
-
-
-
-
-
-
 
 
 ```{r}
