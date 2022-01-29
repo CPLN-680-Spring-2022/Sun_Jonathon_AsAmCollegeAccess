@@ -435,8 +435,15 @@ Universities %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
   filter(!RACE == "Total_Enrollment") %>%
   mutate(Only_Year = year(YEARS)) %>%
-ggplot()
-  geom_bar()
+  group_by(CARNEGIE_CLASSIFCATION2021, Only_Year, RACE) %>%
+  summarize(Total = sum(FREQUENCY)) %>%
+ggplot(aes(x = RACE, y = Total, fill = RACE)) +
+  geom_bar(stat="identity" ,position = "dodge2") +
+  facet_wrap(~CARNEGIE_CLASSIFCATION2021,
+             scales = "free") +
+  theme(legend.position = "none") +
+  gganimate::transition_time(Only_Year) %>%
+  plotTheme()
 ```
 
 
