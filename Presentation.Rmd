@@ -1,17 +1,20 @@
 ---
-title: "Capstone"
+title: "Asian American College Access"
+subtitle: "<br/>Asian American Data Disaggregation"
 author: "Jonathon Sun"
-date: "1/14/2022"
-output: html_document
+institute: "University of Pennsylvania Graduate School of Education"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning = FALSE,
-	include = FALSE
-)
+options(htmltools.dir.version = FALSE)
 
 if(!require('pacman')) {install.packages('pacman')}
 pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate)
@@ -21,12 +24,11 @@ options(scipen = 999)
 options(scipen =  "sf")
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
-```
+
 
 # Datasets
 
-```{r message=FALSE, warning=FALSE}
-# IPEDS Post-secondary institutions
+# IPEDS Post-secondary institutions ---------------------
 Remove <- c("OBJECTID","CBSA","NMCBSA","CBSATYPE","CSA","SLDU","SCHOOLYEAR","NECTA","NMNECTA","CD","SLDL","NMCSA","LOCALE")
 
 Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
@@ -42,28 +44,17 @@ ALL_Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46
 Philadelphia_tracts <- tracts(state = "PA", county = "Philadelphia County") %>%
   st_transform(st_crs(Universities))
 
-ggplot() +
-  geom_sf(data = Philadelphia_tracts)
-
 # Census Tract centroids as points -------------------------------------
 Philadelphia_Centroids <- Philadelphia_tracts %>%
   st_centroid() %>%
   st_transform(st_crs(Universities))
-
-ggplot() +
-  geom_sf(data = Philadelphia_Centroids)
 
 # TIGRIS Philadelphia School Districts ---------------------------------
 Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
   st_transform(st_crs(Universities)) %>%
   st_intersection(st_union(Philadelphia_tracts))
 
-ggplot() +
-  geom_sf(data = Philadelphia_School_District)
-```
-
-```{r Safegraph_Load}
-# Safegraph data on Education
+# Safegraph data on Education -----------------
 Philly_Education <- read.csv("Data\\geometry.csv") %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326, agr = "constant") %>%
   st_transform(crs = "EPSG:4326")%>%
@@ -89,9 +80,7 @@ Philly_Education_Long_FALSE <- pivot_longer(Philly_Education, 7:13, names_to = "
                               unique()
 
 Philly_Education_Long <- rbind(Philly_Education_Long,Philly_Education_Long_FALSE)
-```
 
-```{r}
 # Tidycensus --------------------------------
 A <- load_variables(2019,
                             "acs5",
@@ -207,9 +196,6 @@ ACS.Long <- ACS.Long %>%
          Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_including_Some_other_race","Two_or_more_races_Two_races_including_Some_other_race"),
          Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_excluding_Some_other_race,_and_three_or_more_races","Two_or_more_races_Two_races_excluding_Some_other_race,_and_three_or_more_races"))
 
-```
-
-```{r}
 #Geocoded data using Google Maps ---------------------------------------
 
 Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia")
@@ -221,10 +207,8 @@ locations_Shp <- locations_LatLon %>%
   st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
   st_transform(st_crs(Universities)) %>%
   cbind(Locations)
-```
 
-```{r}
-# IPEDS Race Enrollment Data
+# IPEDS Race Enrollment Data -----------------------------
 FE <- list.files("Data/IPEDS Fall Enrollment Data")
 files <- paste0("Data/IPEDS Fall Enrollment Data/",FE)
 
@@ -339,10 +323,7 @@ IPEDS_Race <- rbind(df_clean, A) %>%
                      Years = ymd(paste(Years,"0101"))) %>%
              rename(Race = name,
                     Frequency = value) 
-```
 
-
-```{r message=FALSE, warning=FALSE}
 #Carnegie Classification ---------------------
 FE <- list.files("Data/Carnegie_Classification")
 files <- paste0("Data/Carnegie_Classification/",FE)
@@ -388,147 +369,121 @@ ALL_Universities <- left_join(ALL_Universities %>%
 ```
 
 
-# Summary Statistics
+# Introduction
 
+Asian American Data
 
+---
 
+# remark.js vs xaringan
 
-## Higher Education Enrollment Data
+Some differences between using remark.js (left) and using **xaringan** (right):
+
+.pull-left[
+1. Start with a boilerplate HTML file;
+
+1. Plain Markdown;
+
+1. Write JavaScript to autoplay slides;
+
+1. Manually configure MathJax;
+
+1. Highlight code with `*`;
+
+1. Edit Markdown source and refresh browser to see updated slides;
+]
+
+.pull-right[
+1. Start with an R Markdown document;
+
+1. R Markdown (can embed R/other code chunks);
+
+1. Provide an option `autoplay`;
+
+1. MathJax just works;<sup>*</sup>
+
+1. Highlight code with `{{}}`;
+
+1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
+]
+
+.footnote[[*] Not really. See next page.]
+
+---
+
+# Math Expressions
+
+You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
+
+```
+$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+```
+
+$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+
+Limitations:
+
+1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+
+1. There should not be spaces after the opening `$` or before the closing `$`.
+
+1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+
+---
+
+# R Code
+
+```{r comment='#'}
+# a boring regression
+fit = lm(dist ~ 1 + speed, data = cars)
+coef(summary(fit))
+dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
+grep('天', dojutsu, value = TRUE)
+```
+
+---
+
+# R Plots
+
+```{r cars, fig.height=4, dev='svg'}
+par(mar = c(4, 4, 1, .1))
+plot(cars, pch = 19, col = 'darkgray', las = 1)
+abline(fit, lwd = 2)
+```
+
+---
+
+# Tables
+
+If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+
 ```{r}
-ALL_Universities %>%
-  st_drop_geometry() %>%
-  filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
-  filter(!RACE == "Total_Enrollment") %>%
-  group_by(YEARS, RACE) %>%
-  summarize(n = sum(FREQUENCY)) %>%
-  mutate(percentage = n / sum(n)) %>%
-ggplot( aes(x = YEARS, y = percentage, fill = RACE)) +
-  geom_area() +
-  labs(title = "Breakdown of Enrollment",
-       subtitle = "From 2010 - 2020") +
-  plotTheme()
-
-Universities %>%
-  st_drop_geometry() %>%
-  filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
-  filter(!RACE == "Total_Enrollment") %>%
-  group_by(YEARS, RACE) %>%
-  summarize(n = sum(FREQUENCY)) %>%
-  mutate(percentage = n / sum(n)) %>%
-  filter(!RACE == "White non-Hispanic") %>%
-ggplot( aes(x = YEARS, y = percentage, fill = RACE)) +
-  geom_area() +
-  labs(title = "Breakdown of Enrollment",
-       subtitle = "From 2010 - 2020") +
-  plotTheme()
+knitr::kable(head(iris), format = 'html')
 ```
 
-```{r Philadelphia Maps}
-Universities %>%
-  group_by(NAME, SHORT_CARNEGIE, RACE) %>%
-  summarize(FREQUENCY = sum(FREQUENCY)) %>%
-  filter(RACE == "Total_Enrollment") %>%
-  ggplot() +
-  geom_sf( aes(color = SHORT_CARNEGIE,
-               size = FREQUENCY)) +
-  geom_sf(data = Philadelphia_School_District,
-          fill = "transparent") +
-  mapTheme()
+---
 
-Universities %>%
-  st_drop_geometry() %>%
-  filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
-  filter(!RACE == "Total_Enrollment") %>%
-  mutate(Only_Year = year(YEARS)) %>%
-  group_by(Short, Only_Year, RACE) %>%
-  summarize(Total = sum(FREQUENCY)) %>%
-ggplot(aes(x = Only_Year, y = Total, fill = RACE)) +
-  geom_bar(stat="identity" ,position = "stack") +
-  facet_wrap(~CARNEGIE_CLASSIFCATION2021,
-             scales = "free") +
-  gganimate::transition_time(Only_Year) %>%
-  plotTheme()
+# HTML Widgets
+
+I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
+
+Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
+
+See the next page for two HTML widgets.
+
+---
+
+```{r out.width='100%', fig.height=6, eval=require('leaflet')}
+library(leaflet)
+leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 17)
 ```
 
-## Census Tract Information
-```{r}
-cc <- scales::seq_gradient_pal("red", "green")(seq(0,1,length.out=A))
+---
 
-
-ACS.Long %>%
-  filter(Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity)[1]) %>%
-  filter(Year == 2019) %>%
-ggplot() +
-  geom_sf( aes(fill = Frequency)) +
-  geom_sf(data = Universities %>%
-                    select(UNITID, RACE, FREQUENCY, YEARS, SHORT_CARNEGIE) %>%
-                    filter(!is.na(SHORT_CARNEGIE)) %>%
-                    filter(RACE == "Asian or Pacific Islander ") %>%
-                    filter(YEARS == "2020-01-01") %>%
-                    rename(AAPI_students = FREQUENCY),
-           aes(color = AAPI_students,
-               shape = SHORT_CARNEGIE)) +
-  scale_colour_gradient(low = "red", high = "green") +
-  scale_shape_manual(values = c(1:length(unique(Universities$SHORT_CARNEGIE)))) +
-  labs(title = print(unique(ACS.Long$Race_Ethnicity)[1])) +
-  mapTheme()
-  
-  ggsave(path = "Plots", filename = paste("plot",unique(ACS.Long$Race_Ethnicity)[1],".jpg"),  dpi=600, width = 16, height = 9)
-
-for(i in 1:length(unique(ACS.Long$Race_Ethnicity))) {
-ACS.Long %>%
-  filter(Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity)[i]) %>%
-  filter(Year == 2019) %>%
-ggplot() +
-  geom_sf( aes(fill = Frequency)) +
-  geom_sf(data = Universities %>%
-                    select(UNITID, RACE, FREQUENCY, YEARS, SHORT_CARNEGIE) %>%
-                    filter(!is.na(SHORT_CARNEGIE)) %>%
-                    filter(RACE == "Asian or Pacific Islander ") %>%
-                    filter(YEARS == "2020-01-01") %>%
-                    rename(AAPI_students = FREQUENCY),
-           aes(color = AAPI_students,
-               shape = SHORT_CARNEGIE)) +
-  scale_colour_gradient(low = "red", high = "green") +
-  scale_shape_manual(values = c(1:length(unique(Universities$SHORT_CARNEGIE)))) +
-  labs(title = print(unique(ACS.Long$Race_Ethnicity)[i])) +
-  mapTheme()
-  
-  ggsave(path = "Plots", filename = paste("plot",unique(ACS.Long$Race_Ethnicity)[i],".jpg"),  dpi=600, width = 16, height = 9)
-}
-
-
+```{r eval=require('DT'), tidy=FALSE}
+DT::datatable(
+  head(iris, 10),
+  fillContainer = FALSE, options = list(pageLength = 8)
+)
 ```
 
-
-## Geometry Data
-```{r echo=TRUE, message=FALSE, warning=FALSE}
-ggplot() +
-  geom_sf(data = ACS.Long %>%
-                  filter(Race_Ethnicity == "Asian_alone"),
-           aes(fill = Frequency)) +
-  labs(title = "Education Institutions in Philadelphia",
-       subtitle = "By institutional category") +
-  geom_sf(data = Philly_Education_Long %>%
-                    filter(!Type_of_Ed == "Not_Categorized") %>%
-                    filter(grepl("School",Type_of_Ed)),
-                          aes(color = Type_of_Ed,
-                          shape = Type_of_Ed)) +
-  scale_shape_manual(values = c(1:length(unique(Philly_Education_Long$Type_of_Ed)))) +
-  geom_sf(data = Philadelphia_tracts, 
-          fill = "transparent") +
-  mapTheme()
-
-ggplot() +
-  geom_sf(data = ACS.Long, aes(fill = Frequency)) +
-  facet_wrap(~Race_Ethnicity) +
-  mapTheme()
-```
-
-
-```{r eval=FALSE, include=FALSE}
-
-file_names <- list.files("zip_out")
-files <- paste0(directory,"/zip_out/",file_names,"/home_panel_summary.csv")
-
-```
