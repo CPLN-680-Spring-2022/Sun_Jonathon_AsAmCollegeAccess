@@ -120,6 +120,17 @@ Variables <- bind_rows(A,B) %>%
                   label = str_replace(label,"Total","Total_Population")
                 )
 
+Variables <- bind_rows(A,B) %>%
+                mutate(
+                  label = str_remove(label,"Estimate!!"),
+                  label = str_remove(label,"Total:!!"),
+                  label = str_remove_all(label,"!!"),
+                  label = str_replace_all(label,":"," "),
+                  label = str_trim(label),
+                  label = str_replace_all(label," ","_"),
+                  label = str_replace(label,"Total","Total_Population")
+                )
+
 ACS.wide <-  get_acs(geography = "tract", 
                           variables = Variables$name, 
                           state = "PA",
@@ -141,10 +152,12 @@ cols.to <- append(cols, "geometry")
 
 ## this function below renames all the columns based on the two lists that we made. that being col.from the variables original names to cols.to are the names that we made from the list of census data.
 ACS.wide  <- ACS.wide  %>%
-                   rename_at(vars(col.from), function(x) cols.to)
-ACS.Long <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
-      mutate(Percentage = (Frequency/Total_Population)*100,
-             Year = ymd(paste(Years,"0101")))
+                   rename_at(vars(col.from), function(x) cols.to) %>%
+                   mutate(Asian_pop = Asian_alone)
+ACS.Long <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-2), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
+      mutate(Tot_Percentage = (Frequency/Total_Population)*100,
+             Asian_Percentage = (Frequency/Asian_pop) * 100,
+             Year = ymd(paste(2019,"0101")))
 
 Years <- seq(from = 2011, to = 2018, by = 1)
 
@@ -166,13 +179,13 @@ Variables <- bind_rows(A,B) %>%
                 mutate(
                   label = str_remove(label,"Estimate!!"),
                   label = str_remove(label,"Total:!!"),
+                  label = str_remove(label,"Total!!"),
                   label = str_remove_all(label,"!!"),
                   label = str_replace_all(label,":"," "),
                   label = str_trim(label),
                   label = str_replace_all(label," ","_"),
                   label = str_replace(label,"Total","Total_Population")
                 )  
-  
   
 ACS.wide <-  get_acs(geography = "tract", 
                           variables = Variables$name, 
@@ -194,9 +207,12 @@ cols <- append(namestoAdd, cols)
 cols.to <- append(cols, "geometry")  
   
 ACS.wide  <- ACS.wide  %>%
-                   rename_at(vars(col.from), function(x) cols.to)
+                   rename_at(vars(col.from), function(x) cols.to) %>%
+                   mutate(Asian_pop = Asian_alone)
+
 f <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
       mutate(Percentage = (Frequency/Total_Population)*100,
+             Asian_Percentage = (Frequency/Asian_pop) * 100,
              Year = ymd(paste(Years[i],"0101")))  
 ACS.Long <- rbind(ACS.Long,f)  
 }
