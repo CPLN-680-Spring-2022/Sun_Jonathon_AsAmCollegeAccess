@@ -42,24 +42,24 @@ ALL_Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46
 Philadelphia_tracts <- tracts(state = "PA", county = "Philadelphia County") %>%
   st_transform(st_crs(Universities))
 
-ggplot() +
-  geom_sf(data = Philadelphia_tracts)
+#ggplot() +
+#  geom_sf(data = Philadelphia_tracts)
 
 # Census Tract centroids as points -------------------------------------
 Philadelphia_Centroids <- Philadelphia_tracts %>%
   st_centroid() %>%
   st_transform(st_crs(Universities))
 
-ggplot() +
-  geom_sf(data = Philadelphia_Centroids)
+#ggplot() +
+#  geom_sf(data = Philadelphia_Centroids)
 
 # TIGRIS Philadelphia School Districts ---------------------------------
 Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
   st_transform(st_crs(Universities)) %>%
   st_intersection(st_union(Philadelphia_tracts))
 
-ggplot() +
-  geom_sf(data = Philadelphia_School_District)
+#ggplot() +
+#  geom_sf(data = Philadelphia_School_District)
 ```
 
 ```{r Safegraph_Load}
@@ -93,6 +93,9 @@ Philly_Education_Long <- rbind(Philly_Education_Long,Philly_Education_Long_FALSE
 
 ```{r}
 # Tidycensus --------------------------------
+
+census_api_key("197587f713e2714b2938da9775bec9d9e65118db", install = TRUE, overwrite = TRUE)
+
 A <- load_variables(2019,
                             "acs5",
                             cache = FALSE) %>%
@@ -141,7 +144,7 @@ ACS.wide  <- ACS.wide  %>%
                    rename_at(vars(col.from), function(x) cols.to)
 ACS.Long <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
       mutate(Percentage = (Frequency/Total_Population)*100,
-             Year = 2019)
+             Year = ymd(paste(Years,"0101")))
 
 Years <- seq(from = 2011, to = 2018, by = 1)
 
@@ -194,7 +197,7 @@ ACS.wide  <- ACS.wide  %>%
                    rename_at(vars(col.from), function(x) cols.to)
 f <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
       mutate(Percentage = (Frequency/Total_Population)*100,
-             Year = Years[i])  
+             Year = ymd(paste(Years[i],"0101")))  
 ACS.Long <- rbind(ACS.Long,f)  
 }
 
@@ -440,7 +443,7 @@ Universities %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
   filter(!RACE == "Total_Enrollment") %>%
   mutate(Only_Year = year(YEARS)) %>%
-  group_by(Short, Only_Year, RACE) %>%
+  group_by(CARNEGIE_CLASSIFCATION2021, Only_Year, RACE) %>%
   summarize(Total = sum(FREQUENCY)) %>%
 ggplot(aes(x = Only_Year, y = Total, fill = RACE)) +
   geom_bar(stat="identity" ,position = "stack") +
@@ -496,6 +499,36 @@ ggplot() +
   
   ggsave(path = "Plots", filename = paste("plot",unique(ACS.Long$Race_Ethnicity)[i],".jpg"),  dpi=600, width = 16, height = 9)
 }
+
+
+```
+
+## Census Data
+
+```{r}
+ACS.Long %>%
+  st_drop_geometry() %>%
+  filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
+  mutate(Only_Year = year(YEARS)) %>%
+ggplot( aes(x = Only_Year, y = Frequency, color = Race_Ethnicity)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none") +
+  labs(title = "Asian Ethnic group by Frequency",
+       subtitle = "Philadelphia")
+  plotTheme()
+  
+ACS.Long %>%
+  st_drop_geometry() %>%
+  filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
+  mutate(Only_Year = year(YEARS)) %>%
+ggplot( aes(x = Only_Year, y = Percentage, color = Race_Ethnicity)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none") +
+  labs(title = "Asian Ethnic group by Percentage",
+       subtitle = "Philadelphia")
+  plotTheme()
 
 
 ```
