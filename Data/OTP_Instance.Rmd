@@ -96,8 +96,6 @@ route <- otp_plan(otpcon,
                   fromPlace = c(-75.17670, 39.96870),
                   toPlace = Vietlead,
                   mode = c("WALK","TRANSIT"))
-
-
 ggplot() +
   geom_sf(data = route) +
   geom_sf(data = Philadelphia,

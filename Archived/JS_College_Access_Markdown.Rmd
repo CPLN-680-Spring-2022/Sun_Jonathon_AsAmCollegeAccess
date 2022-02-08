@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 
 if(!require('pacman')) {install.packages('pacman')}
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate, plotly)
 
 register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
 options(scipen = 999)
@@ -511,43 +511,39 @@ ggplot() +
 ## Census Data
 
 ```{r}
-ALL_Universities %>%
-  st_drop_geometry() %>%
-  filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
-  filter(!RACE == "Total_Enrollment") %>%
-  group_by(YEARS, RACE) %>%
-  summarize(n = sum(FREQUENCY)) %>%
-  mutate(percentage = n / sum(n)) %>%
-ggplot( aes(x = YEARS, y = percentage, fill = RACE)) +
-  geom_area() +
-  labs(title = "Breakdown of Enrollment",
-       subtitle = "From 2010 - 2020") +
-  plotTheme()
-
+ggplotly(
 ACS.Long %>%
   st_drop_geometry() %>%
   filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
   mutate(Only_Year = year(Year)) %>%
-  group_by(Only_Year, Race_Ethnicity) %>%
-  summarize(n = sum(Frequency)) %>%
-  mutate(percentage = n / sum(n)) %>%
-ggplot( aes(x = Only_Year, y = percentage, fill = Race_Ethnicity)) +
-  geom_area() +
-  labs(title = "Asian Ethnic group by Frequency",
-       subtitle = "Philadelphia") +
-  plotTheme()
-  
-ACS.Long %>%
-  st_drop_geometry() %>%
-  filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
-  mutate(Only_Year = year(YEARS)) %>%
-ggplot( aes(x = Only_Year, y = Percentage, color = Race_Ethnicity)) +
+  group_by(Only_Year,Race_Ethnicity) %>%
+  summarize(total = sum(Frequency)) %>%
+ggplot( aes(x = Only_Year, y = total, color = Race_Ethnicity)) +
   geom_point() +
   geom_line() +
   theme(legend.position = "none") +
   labs(title = "Asian Ethnic group by Percentage",
-       subtitle = "Philadelphia")
+       subtitle = "Philadelphia") +
   plotTheme()
+)
+
+
+ggplotly(
+ACS.Long %>%
+  st_drop_geometry() %>%
+  filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
+  mutate(Only_Year = year(Year),
+         Asian_Percentage = if_else(is.na(Asian_Percentage) == TRUE,0,Asian_Percentage)) %>%
+  group_by(Only_Year,Race_Ethnicity) %>%
+  summarize(Average = mean(Asian_Percentage)) %>%
+ggplot( aes(x = Only_Year, y = Average, color = Race_Ethnicity)) +
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none") +
+  labs(title = "Asian Ethnic group by Percentage",
+       subtitle = "Philadelphia") +
+  plotTheme()
+)
 
 
 ```

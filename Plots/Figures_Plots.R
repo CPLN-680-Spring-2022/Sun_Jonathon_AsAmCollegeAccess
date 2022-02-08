@@ -9,6 +9,7 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 
 
 ## Higher Education Enrollment Data
+ggplotly(
 ALL_Universities %>%
   st_drop_geometry() %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
@@ -21,7 +22,9 @@ ALL_Universities %>%
   labs(title = "Breakdown of Enrollment",
        subtitle = "From 2010 - 2020") +
   plotTheme()
+)
 
+ggplotly(
 Universities %>%
   st_drop_geometry() %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
@@ -34,7 +37,8 @@ Universities %>%
   geom_area() +
   labs(title = "Breakdown of Enrollment",
        subtitle = "From 2010 - 2020") +
-  plotTheme()
+  plotTheme() 
+)
 
 
 Universities %>%
@@ -48,6 +52,7 @@ Universities %>%
           fill = "transparent") +
   mapTheme()
 
+ggplotly(
 Universities %>%
   st_drop_geometry() %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
@@ -61,7 +66,7 @@ Universities %>%
              scales = "free") +
   gganimate::transition_time(Only_Year) %>%
   plotTheme()
-
+)
 
 ## Census Tract Information
 
@@ -91,7 +96,9 @@ ggsave(path = "Plots", filename = paste("plot",unique(ACS.Long$Race_Ethnicity)[1
 for(i in 1:length(unique(ACS.Long$Race_Ethnicity))) {
   ACS.Long %>%
     filter(Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity)[i]) %>%
-    filter(Year == 2019) %>%
+    filter(Year == "2019-01-01") %>%
+    mutate(Race_Ethnicity = str_replace(Race_Ethnicity,"_"," "),
+           Race_Ethnicity = str_to_title(Race_Ethnicity)) %>%
     ggplot() +
     geom_sf( aes(fill = Frequency)) +
     geom_sf(data = Universities %>%
@@ -101,17 +108,22 @@ for(i in 1:length(unique(ACS.Long$Race_Ethnicity))) {
               filter(YEARS == "2020-01-01") %>%
               rename(AAPI_students = FREQUENCY),
             aes(color = AAPI_students,
-                shape = SHORT_CARNEGIE)) +
+                shape = SHORT_CARNEGIE),
+            size = 5) +
     scale_colour_gradient(low = "red", high = "green") +
-    scale_shape_manual(values = c(1:length(unique(Universities$SHORT_CARNEGIE)))) +
-    labs(title = print(unique(ACS.Long$Race_Ethnicity)[i])) +
+    scale_shape_manual(values = c(12:(12+length(unique(Universities$SHORT_CARNEGIE))))) +
+    labs(title = print(str_to_title(str_replace_all(unique(ACS.Long$Race_Ethnicity),"_"," "))[i])) +
     mapTheme()
   
   ggsave(path = "Plots", filename = paste("plot",unique(ACS.Long$Race_Ethnicity)[i],".jpg"),  dpi=600, width = 16, height = 9)
 }
 
+
+
+
 ## Census Data
 
+ggplotly(
 ALL_Universities %>%
   st_drop_geometry() %>%
   filter(is.na(CARNEGIE_CLASSIFCATION2021) == FALSE) %>%
@@ -124,7 +136,9 @@ ALL_Universities %>%
   labs(title = "Breakdown of Enrollment",
        subtitle = "From 2010 - 2020") +
   plotTheme()
+)
 
+ggplotly(
 ACS.Long %>%
   st_drop_geometry() %>%
   filter(!Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
@@ -137,6 +151,7 @@ ACS.Long %>%
   labs(title = "Asian Ethnic group by Percentage",
        subtitle = "Philadelphia") +
   plotTheme()
+)
 
 ggplotly(
 ACS.Long %>%
