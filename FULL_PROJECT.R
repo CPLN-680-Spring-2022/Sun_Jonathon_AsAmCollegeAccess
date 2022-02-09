@@ -7,6 +7,7 @@ register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0")
 options(scipen = 999)
 options(scipen =  "sf")
 
+getwd()
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
 # Data Import and Cleaning --------------------------------
@@ -18,4 +19,4 @@ source("Data/IPEDS_DATA.R")
 source("Data/Carnegie_Classification.R")
 
 # Figures -----------------------------
-source("Figures_Plots.R")
+source("Plots/Figures_Plots.R")

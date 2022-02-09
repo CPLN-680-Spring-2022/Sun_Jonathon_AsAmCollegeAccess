@@ -1,489 +1,163 @@
 ---
 title: "Asian American College Access"
-subtitle: "<br/>Asian American Data Disaggregation"
 author: "Jonathon Sun"
-institute: "University of Pennsylvania Graduate School of Education"
-date: "`r Sys.Date()`"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
+date: "2/8/2022"
+output: 
+  ioslides_presentation:
+    widescreen: true
 ---
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
 
-if(!require('pacman')) {install.packages('pacman')}
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate)
-
-register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
-options(scipen = 999)
-options(scipen =  "sf")
+pacman::p_load(plotly, tidyverse, DT, ggplot, sf, formattable)
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
+# Data Import and Cleaning --------------------------------
+source("Data/ShapeFiles.R")
+source("Data/SafeGraph.R")
+source("Data/Census_Data.R")
+source("Data/Gmaps_Locations.R")
+source("Data/IPEDS_DATA.R")
+source("Data/Carnegie_Classification.R")
+source("Data/Timeline.R")
 
-# Datasets
-
-# IPEDS Post-secondary institutions ---------------------
-Remove <- c("OBJECTID","CBSA","NMCBSA","CBSATYPE","CSA","SLDU","SCHOOLYEAR","NECTA","NMNECTA","CD","SLDL","NMCSA","LOCALE")
-
-Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
-                    select(!Remove) %>%
-                    filter(STATE == "PA") %>%
-                    filter(NMCNTY == "Philadelphia County") %>%
-                    st_as_sf()
-
-ALL_Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
-                    select(!Remove) %>%
-                    st_as_sf()
-# TIGRIS Philadelphia Census Tracts -------------------------------
-Philadelphia_tracts <- tracts(state = "PA", county = "Philadelphia County") %>%
-  st_transform(st_crs(Universities))
-
-# Census Tract centroids as points -------------------------------------
-Philadelphia_Centroids <- Philadelphia_tracts %>%
-  st_centroid() %>%
-  st_transform(st_crs(Universities))
-
-# TIGRIS Philadelphia School Districts ---------------------------------
-Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
-  st_transform(st_crs(Universities)) %>%
-  st_intersection(st_union(Philadelphia_tracts))
-
-# Safegraph data on Education -----------------
-Philly_Education <- read.csv("Data\\geometry.csv") %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, agr = "constant") %>%
-  st_transform(crs = "EPSG:4326")%>%
-  select(!c(1,2,4,6,7,9,10,11,13,14)) %>%
-  mutate(Higher_Education = ifelse(location_name %in% Universities$NAME | 
-                                   street_address %in% Universities$STREET |
-                                    grepl("University of Penn", location_name) == TRUE, TRUE, FALSE),
-         Free_Library = ifelse(grepl("Free Library", location_name) == TRUE, TRUE, FALSE),
-         Kumon = ifelse(grepl("Kumon", location_name) == TRUE, TRUE, FALSE),
-         High_School = ifelse(grepl("Hs", location_name) == TRUE, TRUE, FALSE),
-         Middle_School = ifelse(grepl("\\<Ms\\>", location_name) == TRUE, TRUE, FALSE),
-         Elementary_School = ifelse(grepl("\\<Sch\\>", location_name) == TRUE, TRUE, FALSE),
-         Charter_School = ifelse(grepl("\\<Cs\\>", location_name) == TRUE, TRUE, FALSE))
-
-Philly_Education_Long <- pivot_longer(Philly_Education, 7:13, names_to = "Type_of_Ed", values_to = "Type_of_Ed_Yes") %>%
-                              filter(Type_of_Ed_Yes == TRUE) %>%
-                              select(!Type_of_Ed_Yes)
-
-Philly_Education_Long_FALSE <- pivot_longer(Philly_Education, 7:13, names_to = "Type_of_Ed", values_to = "Type_of_Ed_Yes") %>%
-                              filter(Type_of_Ed_Yes == FALSE) %>%
-                              mutate(Type_of_Ed = "Not_Categorized") %>%
-                              select(!Type_of_Ed_Yes) %>%
-                              unique()
-
-Philly_Education_Long <- rbind(Philly_Education_Long,Philly_Education_Long_FALSE)
-
-# Tidycensus --------------------------------
-A <- load_variables(2019,
-                            "acs5",
-                            cache = FALSE) %>%
-              filter(concept == "RACE")  %>%
-              mutate(Merge_name = paste(name,"E", sep =""))
-
-B <- load_variables(2019,
-                            "acs5",
-                            cache = FALSE) %>%
-              filter(grepl("ASIAN ALONE BY SELECTED GROUPS", concept)) %>%
-              mutate(Merge_name = paste(name,"E", sep ="")) %>%
-              slice(-1)
-
-Variables <- bind_rows(A,B) %>%
-                mutate(
-                  label = str_remove(label,"Estimate!!"),
-                  label = str_remove(label,"Total:!!"),
-                  label = str_remove_all(label,"!!"),
-                  label = str_replace_all(label,":"," "),
-                  label = str_trim(label),
-                  label = str_replace_all(label," ","_"),
-                  label = str_replace(label,"Total","Total_Population")
-                )
-
-ACS.wide <-  get_acs(geography = "tract", 
-                          variables = Variables$name, 
-                          state = "PA",
-                          county = "Philadelphia",
-                          output = "wide",
-                          geometry = TRUE,
-                     year = 2019) %>% 
-                dplyr::select (GEOID, NAME, ends_with("E")) %>%
-                st_transform(st_crs(Universities))
-
-col.from <- colnames(ACS.wide)
-
-colnames(ACS.wide)
-
-cols <- Variables$label
-namestoAdd <- c("GEOID","NAME")
-cols <- append(namestoAdd, cols)
-cols.to <- append(cols, "geometry")
-
-## this function below renames all the columns based on the two lists that we made. that being col.from the variables original names to cols.to are the names that we made from the list of census data.
-ACS.wide  <- ACS.wide  %>%
-                   rename_at(vars(col.from), function(x) cols.to)
-ACS.Long <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
-      mutate(Percentage = (Frequency/Total_Population)*100,
-             Year = 2019)
-
-Years <- seq(from = 2011, to = 2018, by = 1)
-
-for(i in 1:length(Years)) {
-A <- load_variables(Years[i],
-                            "acs5",
-                            cache = FALSE) %>%
-              filter(concept == "RACE")  %>%
-              mutate(Merge_name = paste(name,"E", sep =""))
-
-B <- load_variables(Years[i],
-                            "acs5",
-                            cache = FALSE) %>%
-              filter(grepl("ASIAN ALONE BY SELECTED GROUPS", concept)) %>%
-              mutate(Merge_name = paste(name,"E", sep ="")) %>%
-              slice(-1)
-
-Variables <- bind_rows(A,B) %>%
-                mutate(
-                  label = str_remove(label,"Estimate!!"),
-                  label = str_remove(label,"Total:!!"),
-                  label = str_remove_all(label,"!!"),
-                  label = str_replace_all(label,":"," "),
-                  label = str_trim(label),
-                  label = str_replace_all(label," ","_"),
-                  label = str_replace(label,"Total","Total_Population")
-                )  
-  
-  
-ACS.wide <-  get_acs(geography = "tract", 
-                          variables = Variables$name, 
-                          state = "PA",
-                          county = "Philadelphia",
-                          output = "wide",
-                          geometry = TRUE,
-                     year = Years[i]) %>% 
-                dplyr::select (GEOID, NAME, ends_with("E")) %>%
-                st_transform(st_crs(Universities))
-
-col.from <- colnames(ACS.wide)
-
-colnames(ACS.wide)
-
-cols <- Variables$label
-namestoAdd <- c("GEOID","NAME")
-cols <- append(namestoAdd, cols)
-cols.to <- append(cols, "geometry")  
-  
-ACS.wide  <- ACS.wide  %>%
-                   rename_at(vars(col.from), function(x) cols.to)
-f <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-1), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
-      mutate(Percentage = (Frequency/Total_Population)*100,
-             Year = Years[i])  
-ACS.Long <- rbind(ACS.Long,f)  
-}
-
-exclude <- c("15007990300", "15009990000", "15009991200", "15001990000", "15001990100", "15001990400", "15001990500", "15001990600", "15001990700", "15001990800", "15001990900", "15001991000", "15001991100","15001991200", "15001991300", "15001991400", "15001991500", "15001991600", "15001991700", "15005990000", "15003980300","15009990200","15003981200","15003980800","15001990300","15007990100","15003981300", "15007990200", "15003990001", "15007041200", "15009980000", "15003980000", "15003981000", "15003980700", "15003980600")
-
-ACS.Long <- ACS.Long %>%
-  filter(!GEOID %in% exclude) %>%
-  mutate(Race_Ethnicity = str_remove(Race_Ethnicity,"Total_Population"),
-         Race_Ethnicity = str_replace(Race_Ethnicity,"Chinese_,_except_Taiwanese","Chinese,_except_Taiwanese"),
-         Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_including_Some_other_race","Two_or_more_races_Two_races_including_Some_other_race"),
-         Race_Ethnicity = str_replace(Race_Ethnicity,"Two_or_more_racesTwo_races_excluding_Some_other_race,_and_three_or_more_races","Two_or_more_races_Two_races_excluding_Some_other_race,_and_three_or_more_races"))
-
-#Geocoded data using Google Maps ---------------------------------------
-
-Locations <- c("Vietlead Philadelphia","Asian Americans United Philadelphia")
-
-locations_LatLon <- geocode(location = Locations)
-locations_Shp <- locations_LatLon %>% 
-  rename(Longitude = lon,
-         Latitude = lat) %>%
-  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326, agr = "constant") %>%
-  st_transform(st_crs(Universities)) %>%
-  cbind(Locations)
-
-# IPEDS Race Enrollment Data -----------------------------
-FE <- list.files("Data/IPEDS Fall Enrollment Data")
-files <- paste0("Data/IPEDS Fall Enrollment Data/",FE)
-
-Columns <- c("unitid",
-             "efalevel",
-             "line",
-             "section",
-             "lstudy",
-             "efrace17",
-             "efrace18",
-             "efrace19",
-             "efrace20",
-             "efrace21",
-             "efrace22",
-             "efrace23",
-             "efrace24")
-
-Years <- seq(from = 2002, to = 2020, by = 1)
-
-Fall_Enrollment <- read_csv(files[1]) %>%
-                      select(Columns) %>%
-                      rename_with(tolower) %>%
-                      mutate(Years = Years[1])
-
-
-for(i in 2:6){  
-A <- read_csv(files[i]) %>%
-                      rename_with(tolower) %>%
-                      select(Columns) %>%
-                      mutate(Years = Years[i])
-
-Fall_Enrollment <- rbind(Fall_Enrollment,A)                      
-}  
-
-
-## IPEDS data has two different naming conventions ------
-
-Colnames2007 <- c("unitid",
-                  "efalevel",
-                  "line",
-                  "section",
-                  "lstudy",
-                  "efnralt",
-                  "efbkaat",
-                  "efaiant",
-                  "efasiat",
-                  "efhispt",
-                  "efwhitt",
-                  "efunknt",
-                  "eftotlt")
-
-A <- read_csv(files[7]) %>%
-                      rename_with(tolower) %>%
-                      mutate(Years = Years[i]) %>%
-                      select(starts_with("ef"))
-colnames(A)
-
-A <- read_csv(files[7]) %>%
-                      rename_with(tolower) %>%
-                      select(Colnames2007) %>%
-                      mutate(Years = Years[i])
-
-for(i in 7:length(files)){  
-B <- read_csv(files[i]) %>%
-                      rename_with(tolower) %>%
-                      select(Colnames2007) %>%
-                      mutate(Years = Years[i])
-
-A <- rbind(A,B)
-rm(B)
-}  
-col.from <- Colnames2007
-cols.to <- Columns
-
-A <- A %>%
-      rename_at(vars(col.from), function(x) cols.to) 
-
-df_clean <- rbind(
-  Fall_Enrollment %>%
-  filter(efalevel %in% c(23)) %>% 
-  select(unitid, starts_with("ef"),Years) %>%
-  pivot_longer(starts_with("ef")) %>%
-  mutate(Level_Student = "Undergraduate"),
-  Fall_Enrollment %>%
-  filter(efalevel %in% c(32)) %>% 
-  select(unitid, starts_with("ef"),Years) %>%
-  pivot_longer(starts_with("ef")) %>%
-  mutate(Level_Student = "Graduate"))
-
-A <- rbind(
-  A %>%
-  filter(efalevel %in% c(23)) %>% 
-  select(unitid, starts_with("ef"),Years) %>%
-  pivot_longer(starts_with("ef")) %>%
-  mutate(Level_Student = "Undergraduate"),
-  A %>%
-  filter(efalevel %in% c(32)) %>% 
-  select(unitid, starts_with("ef"),Years) %>%
-  pivot_longer(starts_with("ef")) %>%
-  mutate(Level_Student = "Graduate"))
-
-IPEDS_Race <- rbind(df_clean, A) %>%
-              filter(!name %in% c("efalevel")) %>%
-              mutate(name = str_replace(name,"efrace17","Nonresident alien"),
-                     name = str_replace(name,"efrace18","Black non-Hispanic"),
-                     name = str_replace(name,"efrace19","American Indian/Alaska Native"),
-                     name = str_replace(name,"efrace20","Asian or Pacific Islander "),
-                     name = str_replace(name,"efrace21","Hispanic"),
-                     name = str_replace(name,"efrace22","White non-Hispanic"),
-                     name = str_replace(name,"efrace23","Race/ethnicity unknown"),
-                     name = str_replace(name,"efrace24","Total_Enrollment"),
-                     Years = ymd(paste(Years,"0101"))) %>%
-             rename(Race = name,
-                    Frequency = value) 
-
-#Carnegie Classification ---------------------
-FE <- list.files("Data/Carnegie_Classification")
-files <- paste0("Data/Carnegie_Classification/",FE)
-
-Carnegie_Variables <- read_xlsx(files[2], 3)
-
-Carnegie_Variables <- Carnegie_Variables %>%
-                        fill(Variable, Label...2) %>%
-                        mutate(Variable = toupper(Variable),
-                               Value = as.numeric(Value)) %>%
-                        filter(grepl("BASIC",Variable)) 
-
-Carnegie_Classification <- read_xlsx(files[2], 4) %>%
-                              select(1, starts_with("basic")) 
-
-Recode <- Carnegie_Variables %>%
-            filter(Variable == "BASIC2021") %>%
-            mutate(Numeric_code = Value + 1)
-
-Carnegie_Classification <- Carnegie_Classification%>%
-                            mutate(basic2021 = basic2021 + 1,
-                                   Carnegie_Classifcation2021 = recode(basic2021, !!!Recode$Label...4),
-                                   Short_Carnegie = ifelse(str_detect(Carnegie_Classifcation2021,":") == TRUE, 
-                                      gsub(":.*","",Carnegie_Classifcation2021),
-                                      Carnegie_Classifcation2021))
-
-IPEDS_Race <- left_join(IPEDS_Race,
-                          Carnegie_Classification %>%
-                            select(unitid,Carnegie_Classifcation2021, Short_Carnegie),
-                          join_by = "unitid")
-
-Universities <- left_join(Universities %>%
-                    mutate(UNITID = as.numeric(UNITID)),
-                  IPEDS_Race %>%
-                    dplyr::rename_with(toupper), 
-                  by = "UNITID","NAME")
-
-ALL_Universities <- left_join(ALL_Universities %>%
-                    mutate(UNITID = as.numeric(UNITID)),
-                  IPEDS_Race %>%
-                    dplyr::rename_with(toupper), 
-                  by = "UNITID","NAME")
+# Figures -----------------------------
+source("Plots/Presentation_Figures.R")
 ```
-
 
 # Introduction
 
-Asian American Data
+Asian Americans 
 
----
 
-# remark.js vs xaringan
+## Research Project Context {.flexbox .vcenter}
+This study is part of a larger mixed methods project. 
+  - Qualitative portion: How are College Access experiences similar or different for Asian Americans of different ethnic backgrounds
+  - Quantitative portion: What is the geographic context of residents? What environmental factors shape Higher Education attainment for Asian Americans?
 
-Some differences between using remark.js (left) and using **xaringan** (right):
+## Current Research Timeline {.flexbox .vcenter}
 
-.pull-left[
-1. Start with a boilerplate HTML file;
-
-1. Plain Markdown;
-
-1. Write JavaScript to autoplay slides;
-
-1. Manually configure MathJax;
-
-1. Highlight code with `*`;
-
-1. Edit Markdown source and refresh browser to see updated slides;
-]
-
-.pull-right[
-1. Start with an R Markdown document;
-
-1. R Markdown (can embed R/other code chunks);
-
-1. Provide an option `autoplay`;
-
-1. MathJax just works;<sup>*</sup>
-
-1. Highlight code with `{{}}`;
-
-1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
-]
-
-.footnote[[*] Not really. See next page.]
-
----
-
-# Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+timeline
 ```
 
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+## Bodies of Literature
 
-Limitations:
+<div style = "float: left; width: 50%">
 
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+**Theories on Urban Spaces**
 
-1. There should not be spaces after the opening `$` or before the closing `$`.
+  - Formations of Cities
+  - Subgroup culture in Urban Spaces
+  
+**Asian Americans**
 
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+  - Asian American History
+  - Geographic Differences
+  
+</div>
+  
+<div style = "float: right; width: 50%">
+**Globalization of Higher Education**
 
----
+  - Immigration patterns
+  - Race across Transnational Lines
+  
+**College Access Frameworks**
+  
+  - College Deserts and College Oasis
+  - Resistance and Fortressing Geographies
 
-# R Code
+</div>
 
-```{r comment='#'}
-# a boring regression
-fit = lm(dist ~ 1 + speed, data = cars)
-coef(summary(fit))
-dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
-grep('天', dojutsu, value = TRUE)
+## Datasets
+- American Community Survey (ACS5 year)
+  - Using `tidycensus` package to access the data.
+  - Using data from 2011 - 2019
+- Integrated Postsecondary Education Data System (IPEDS)
+  - Pulled from their website
+- SafeGraph
+  - Data of all places labelled as education
+- Carnegie Classifications
+  - Includes classifications such as large research university
+- Open Transit Planner (OTP)
+  - Uses General Transit Feed Specifications (GTFS) to estimate travel times 
+
+# Exploratory Data Analysis | Enrollment
+Data on enrollment in Higher Education
+
+## Overall Enrollment in Higher Education {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Enrollment_time)
+Fig_1
+
 ```
 
----
+## Overall Enrollment in Higher Education {.flexbox .vcenter}
 
-# R Plots
-
-```{r cars, fig.height=4, dev='svg'}
-par(mar = c(4, 4, 1, .1))
-plot(cars, pch = 19, col = 'darkgray', las = 1)
-abline(fit, lwd = 2)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(PoC_Enrollment_Time) 
+Fig_1
 ```
 
----
+## Enrollment by Carnegie Classification {.flexbox .vcenter}
 
-# Tables
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=10}
+Fig_1 <- plotly_build(Enrollment_time_Facet_Race)
+Fig_1
+```
+# Exploratory Data Analysis | Census Data
 
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+## Graphing Change Over Time {.flexbox .vcenter}
 
-```{r}
-knitr::kable(head(iris), format = 'html')
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(figure2_slides)
+Fig_1
 ```
 
----
+## Asian Ethnic {.flexbox .vcenter}
 
-# HTML Widgets
-
-I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
-
-Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
-
-See the next page for two HTML widgets.
-
----
-
-```{r out.width='100%', fig.height=6, eval=require('leaflet')}
-library(leaflet)
-leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 17)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Asian_Pop_Philly)
+Fig_1
 ```
 
----
+# Exploratory Data Analysis | Geographic Contexts 
 
-```{r eval=require('DT'), tidy=FALSE}
-DT::datatable(
-  head(iris, 10),
-  fillContainer = FALSE, options = list(pageLength = 8)
-)
+## Geographic Contexts | K-12 Education Landscape {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.asp=.62, fig.width=8}
+Education_Institutions
 ```
 
+## Geographic Contexts | Higher Education Landscape {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Higher_Education_Institutions
+```
+
+# Methods of Analysis
+
+## Potential quantitative Methods
+
+**1. Moran's I**
+
+Use Moran's I to show how populations are clustered in Philadelphia
+
+**1. K-Cluster Analysis**
+
+Show how schools are clustered around particular areas of the city
+
+**1. Some form of Regression**
+
+Very open to suggestions and methods
+
+# Next Steps | Reviewing Literature
+
+## Next Steps
+Clustering and Moran's I are the first steps before conducting more analysis. 
+
+**Reviewing Literature**
+Based on some of the literature, I will continue to refine my research question based on what else has been done in the literature.

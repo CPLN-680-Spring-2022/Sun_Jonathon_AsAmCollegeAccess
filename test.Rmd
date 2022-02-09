@@ -1,0 +1,72 @@
+---
+title: "Untitled"
+author: "Jonathon Sun"
+date: "2/8/2022"
+output: 
+  ioslides_presentation:
+    widescreen: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+<div class = "columns-2">
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+</div>
+## Slide with Bullets
+
+<div style = "float: left; width: 50%">
+
+**Theories on Urban Spaces**
+
+  - Formations of Cities
+  - Subgroup culture in Urban Spaces
+  
+**Asian Americans**
+
+  - Asian American History
+  - Geographic Differences
+  
+</div>
+  
+<div style = "float: right; width: 50%">
+**Globalization of Higher Education**
+
+  - Immigration patterns
+  - Race across Transnational Lines
+  
+**College Access Frameworks**
+  
+  - College Deserts and College Oasis
+  - Resistance and Fortressing Geographies
+
+</div>
+
+
+## Datasets
+- American Community Survey (ACS5 year)
+  - Using `tidycensus` package to access the data.
+  - Using data from 2011 - 2019
+- Integrated Postsecondary Education Data System (IPEDS)
+  - Pulled from their website
+- SafeGraph
+- Carnegie Classifications
+
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
