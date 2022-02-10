@@ -60,10 +60,12 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ## Slide with R Output
 
-```{r cars, echo = TRUE}
-summary(cars)
-```
+This study is part of a larger mixed methods project. 
 
+  - Qualitative portion: How are College Access experiences similar or different for Asian Americans of different ethnic backgrounds
+  
+  - Quantitative portion: What is the geographic context of residents? What environmental factors shape Higher Education attainment for Asian Americans?
+  
 ## Slide with Plot
 
 ```{r pressure}

@@ -31,9 +31,12 @@ source("Plots/Presentation_Figures.R")
 Asian Americans 
 
 
-## Research Project Context {.flexbox .vcenter}
+## Research Project Context
+
 This study is part of a larger mixed methods project. 
+
   - Qualitative portion: How are College Access experiences similar or different for Asian Americans of different ethnic backgrounds
+  
   - Quantitative portion: What is the geographic context of residents? What environmental factors shape Higher Education attainment for Asian Americans?
 
 ## Current Research Timeline {.flexbox .vcenter}
@@ -109,6 +112,13 @@ Fig_1 <- plotly_build(Enrollment_time_Facet_Race)
 Fig_1
 ```
 # Exploratory Data Analysis | Census Data
+
+## Race Over Time {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Race_Frequency_Philly)
+Fig_1
+```
 
 ## Graphing Change Over Time {.flexbox .vcenter}
 

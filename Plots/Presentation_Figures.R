@@ -119,7 +119,7 @@ Asian_Pop_Philly <- ACS.Long %>%
     plotTheme()
 
 
-Figure1_Slides <- ggplotly(
+Race_Frequency_Philly <- ggplotly(
   ACS.Long %>%
     st_drop_geometry() %>%
     filter(Race_Ethnicity %in% unique(ACS.Long$Race_Ethnicity[1:9])) %>%
