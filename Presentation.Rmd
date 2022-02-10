@@ -156,11 +156,11 @@ Higher_Education_Institutions
 
 Use Moran's I to show how populations are clustered in Philadelphia
 
-**1. K-Cluster Analysis**
+**2. K-Cluster Analysis**
 
 Show how schools are clustered around particular areas of the city
 
-**1. Some form of Regression**
+**3. Some form of Regression**
 
 Very open to suggestions and methods
 
