@@ -9,6 +9,7 @@ options(scipen =  "sf")
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
+# ---------------------------
 
 A <- load_variables(2019,
                     "acs5",
@@ -202,6 +203,20 @@ ACS.Long <- left_join(ACS.Long,
                         mutate(Year = str_remove(as.character(Year),"CoTP"),
                                Year = ymd(paste0(Year,"0101"))),
                       by = c("GEOID","Race_Ethnicity","Year"))
+
+# Chinese ratio
+ACS.Long <- ACS.Long %>%
+          st_drop_geometry() %>%
+          group_by(Year, GEOID, Race_Ethnicity) %>%
+          summarize(Total = sum(Frequency)) %>%
+          filter(Race_Ethnicity == "Chinese,_except_Taiwanese") %>%
+          select(-Race_Ethnicity) %>%
+          rename(Chinese_population = Total) %>%
+          left_join(ACS.Long, by = c("Year","GEOID")) %>%
+          relocate(Chinese_population, .after = last_col()) %>%
+          mutate(Ratio_Chinese = Frequency/Chinese_population) %>%
+          st_as_sf()
+          
 
 
 

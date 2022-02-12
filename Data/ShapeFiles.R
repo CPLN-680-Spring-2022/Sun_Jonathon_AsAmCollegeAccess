@@ -35,9 +35,14 @@ Philadelphia_Centroids <- Philadelphia_tracts %>%
 #  geom_sf(data = Philadelphia_Centroids)
 
 # TIGRIS Philadelphia School Districts ---------------------------------
-Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
-  st_transform(st_crs(Universities)) %>%
-  st_intersection(st_union(Philadelphia_tracts))
+#Philadelphia_School_District <- school_districts(state = "PA", type = "unified") %>%
+ # st_transform(st_crs(Universities)) %>%
+ # st_intersection(st_union(Philadelphia_tracts))
+
+Philadelphia_School_District <- county_subdivisions(state = "PA",
+                                           county = "Philadelphia") %>%
+                                st_transform(st_crs(Universities))
+
 
 #ggplot() +
 #  geom_sf(data = Philadelphia_School_District)
