@@ -41,8 +41,8 @@ GTFS_Bus_points <- st_as_sf(GTFS_Bus$stops,
 GTFS_Bus_points <- st_intersection(GTFS_Bus_points, Philadelphia_School_District)
 GTFS_Bus_route <- st_intersection(GTFS_Bus_route, Philadelphia_School_District)
 
-GTFS_Bus_points_Buffers <- st_union(st_buffer(GTFS_Bus_points, 2640)) %>%
-  st_sf() 
+#GTFS_Bus_points_Buffers <- st_union(st_buffer(GTFS_Bus_points, 2640)) %>%
+#  st_sf() 
 
 ## Rail
 GTFS_Rail_shp <- gtfs_as_sf(GTFS_rail)
@@ -56,8 +56,8 @@ GTFS_Rail_points <- st_as_sf(GTFS_rail$stops,
 GTFS_Rail_points <- st_intersection(GTFS_Rail_points, Philadelphia_School_District)
 GTFS_Rail_route <- st_intersection(GTFS_Rail_route, Philadelphia_School_District)
 
-GTFS_Rail_points_Buffers <- st_union(st_buffer(GTFS_Rail_points, 2640)) %>%
-  st_sf() 
+#GTFS_Rail_points_Buffers <- st_union(st_buffer(GTFS_Rail_points, 2640)) %>%
+#  st_sf() 
 
 ggplot() +
   geom_sf(data = Philadelphia_School_District) +
