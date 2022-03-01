@@ -63,13 +63,13 @@ ggplot() +
   geom_sf(data = Philadelphia_School_District) +
   geom_sf(data = GTFS_Rail_points) +
   geom_sf(data = GTFS_Rail_route) +
-  geom_sf(data = GTFS_Rail_points_Buffers,
-          fill = "transparent") +
+#  geom_sf(data = GTFS_Rail_points_Buffers,
+#          fill = "transparent") +
   mapTheme()
 
 ggplot() +
   geom_sf(data = Philadelphia_School_District) +
   geom_sf(data = GTFS_Bus_points) +
   geom_sf(data = GTFS_Bus_route) +
-  geom_sf(data = GTFS_Bus_points_Buffers) +
+#  geom_sf(data = GTFS_Bus_points_Buffers) +
   mapTheme()

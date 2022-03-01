@@ -13,7 +13,6 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 # Data Import and Cleaning --------------------------------
 source("Data/ShapeFiles.R")
 source("Data/SafeGraph.R")
-source("Data/Philly_School_metrics")
 source("Data/Census_Data.R")
 source("Data/Gmaps_Locations.R")
 source("Data/IPEDS_DATA.R")
@@ -21,5 +20,11 @@ source("Data/Carnegie_Classification.R")
 source("Data/Philly_School_metrics.R")
 source("Data/GTFS_Data.R")
 
+
 # Figures -----------------------------
-source("Plots/Figures_Plots.R")
+source("Plots/IPEDS_FIGS.R") #Ipeds Data
+source("Plots/Philly_k12.R") #Philly K-12 schools
+source("Plots/Census_Charts.R") #Census data
+
+#Analysis
+ 

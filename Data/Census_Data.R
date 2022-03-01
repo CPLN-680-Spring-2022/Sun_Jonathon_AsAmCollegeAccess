@@ -1,13 +1,14 @@
 
 # Datasets
 if(!require('pacman')) {install.packages('pacman')}
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate, survey, srvyr)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate, survey, srvyr, caret)
 
 register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
 options(scipen = 999)
 options(scipen =  "sf")
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
+
 
 # ---------------------------
 
@@ -58,6 +59,7 @@ cols.to <- append(cols, "geometry")
 ACS.wide  <- ACS.wide  %>%
   rename_at(vars(col.from), function(x) cols.to) %>%
   mutate(Asian_pop = Asian_alone)
+
 ACS.Long <- pivot_longer(ACS.wide,4:(ncol(ACS.wide)-2), names_to = "Race_Ethnicity", values_to = "Frequency") %>%
   mutate(Tot_Percentage = (Frequency/Total_Population)*100,
          Asian_Percentage = (Frequency/Asian_pop) * 100,
@@ -217,6 +219,65 @@ ACS.Long <- ACS.Long %>%
           mutate(Ratio_Chinese = Frequency/Chinese_population) %>%
           st_as_sf()
           
+
+# testing normalization script -----------------
+#df <- ACS.Long %>%
+#  filter(Year == unique(ACS.Long$Year)[1]) %>%
+#  filter(Race_Ethnicity == unique(ACS.Long$Race_Ethnicity[1]))
+
+#process <- preProcess(as.data.frame(df)[8],
+#                      method = c("range"))
+#norm_scale <- predict(process, as.data.frame(df)[8])
+
+#Normalized <- cbind(df,
+#            norm_scale %>%
+#              rename(Normalize = Frequency))
+
+# Normalization loop ---------------------
+Normalized <- data.frame(matrix(ncol = (length(colnames(ACS.Long))+1), nrow=0)) 
+colnames(Normalized) <- append(colnames(ACS.Long),"Normalize")
+Normalized <- Normalized %>%
+                select(Year,GEOID,Race_Ethnicity,Frequency)
+
+Full_normalized <- data.frame(matrix(ncol = (length(colnames(ACS.Long))+1), nrow=0))
+colnames(Full_normalized) <- append(colnames(ACS.Long),"Normalize") 
+Full_normalized <- Full_normalized %>%
+                select(Year,GEOID,Race_Ethnicity,Frequency,Normalize)
+
+for(i in 1:length(unique(ACS.Long$Year))){
+  df <- ACS.Long %>%
+    select(Year,GEOID,Race_Ethnicity,Frequency) %>%
+    filter(Year == unique(ACS.Long$Year)[i]) %>%
+    st_drop_geometry()
+  
+  for(f in 1:length(unique(ACS.Long$Race_Ethnicity))){
+  df_Ethnicity <- df %>%
+    filter(Race_Ethnicity == unique(ACS.Long$Race_Ethnicity[f]))
+  
+  process <- caret::preProcess(as.data.frame(df_Ethnicity)[4],
+                        method = c("range"))
+  norm_scale <- predict(process, as.data.frame(df_Ethnicity)[4])
+  
+  one_race_object <- cbind(df_Ethnicity,
+                          norm_scale %>%
+                            rename(Normalize = Frequency))
+  Normalized <- rbind(Normalized,one_race_object)
+  }
+
+  Full_normalized <- rbind(Normalized, 
+                           Full_normalized %>%
+                             mutate(Year = lubridate::as_date(Year),
+                                    GEOID = as.character(GEOID),
+                                    Race_Ethnicity = as.character(Race_Ethnicity)))
+
+}
+
+ACS.Long <- left_join(ACS.Long, 
+                  Full_normalized %>%
+                    select(Year,GEOID,Race_Ethnicity,Normalize),
+                  by = c("Year","GEOID","Race_Ethnicity")) %>%
+          unique() %>%
+          relocate(geometry, .after = last_col())
 
 
 

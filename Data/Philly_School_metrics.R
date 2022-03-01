@@ -56,16 +56,6 @@ Philly_Schools <- left_join(df, Philly_Schools %>%
                   select(School),
           by = "School")  
 
-
-Philly_Schools %>%
-  filter(year == 2017) %>%
-  st_as_sf() %>%
-ggplot() +
-  geom_sf(aes(shape = `Overall Tier`)) +
-  geom_sf(data = Philadelphia_School_District,
-          fill = "transparent") +
-  mapTheme()
-
 Philly_Schools_Valid <- st_intersection(Philly_Schools%>%
                                           st_as_sf(), Philadelphia_School_District %>%
                                                         select())
@@ -148,7 +138,7 @@ df_Race <- data.frame(matrix(ncol = 6, nrow = 0))
 colnames(df_Race) <- c("SRCSchoolCode","School_Name","Grade","Total_enrolment","Count","Percent")
 
 df_full <- data.frame(matrix(ncol = 7, nrow = 0 ))
-colnames(df_full) <- c("SRCSchoolCode","School_Name","Grade","Total_enrolment","Count","Percent","Race","year")
+colnames(df_full) <- c("SRCSchoolCode","School_Name","Grade","Total_enrolment","Count","Percent","Race")
 
 
 years <- c(2010:2022)
@@ -337,4 +327,10 @@ for(f in 12:length(files)){
                    df_full) 
 }
   
-  
+Philly_School_All <-  left_join(Philly_Schools %>%
+              rename(SRCSchoolCode = SRC.School.ID,
+                     School_Name = School),
+           df_full %>%
+              select(!School_Name),
+           by = c("SRCSchoolCode","year")) %>%
+                    mutate(Count = as.numeric(str_replace(Count,"s","-99")))
