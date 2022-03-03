@@ -8,9 +8,18 @@ options(scipen = 999)
 options(scipen =  "sf")
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
-
+#At some point you need to put Pacific Islanders into your analysis.
+#The asian group does not include Pacific Islanders
 
 # ---------------------------
+ACS_Variables <- function(year,search){
+                    load_variables(year,
+                                   "acs5",
+                                   cache = FALSE) %>%
+                      filter(concept == search)  %>%
+                      mutate(Merge_name = paste(name,"E", sep =""))
+                  }
+A <- ACS_Variables(2019,"RACE")
 
 A <- load_variables(2019,
                     "acs5",
@@ -25,16 +34,20 @@ B <- load_variables(2019,
   mutate(Merge_name = paste(name,"E", sep ="")) %>%
   slice(-1)
 
-Variables <- bind_rows(A,B) %>%
-  mutate(
-    label = str_remove(label,"Estimate!!"),
-    label = str_remove(label,"Total:!!"),
-    label = str_remove_all(label,"!!"),
-    label = str_replace_all(label,":"," "),
-    label = str_trim(label),
-    label = str_replace_all(label," ","_"),
-    label = str_replace(label,"Total","Total_Population")
-  )
+Clean_ACS_Variables <- function(df){  
+  df %>%
+    mutate(
+      label = str_remove(label,"Estimate!!"),
+      label = str_remove(label,"Total:!!"),
+      label = str_remove_all(label,"!!"),
+      label = str_replace_all(label,":"," "),
+      label = str_trim(label),
+      label = str_replace_all(label," ","_"),
+      label = str_replace(label,"Total","Total_Population"))
+  }
+
+Variables <- Clean_ACS_Variables(rbind(A,B))
+
 
 ACS.wide <-  get_acs(geography = "tract", 
                      variables = Variables$name, 
@@ -277,7 +290,101 @@ ACS.Long <- left_join(ACS.Long,
                     select(Year,GEOID,Race_Ethnicity,Normalize),
                   by = c("Year","GEOID","Race_Ethnicity")) %>%
           unique() %>%
-          relocate(geometry, .after = last_col())
+          relocate(geometry, .after = last_col()) %>%
+          st_as_sf()
+
+Asians <- as.tibble(unique(ACS.Long$Race_Ethnicity)[10:length(unique(ACS.Long$Race_Ethnicity))]) %>%
+            rename(Ethnicity = value) %>%
+            mutate()
+
+# Adding fixed census tract effects ------------------------
+B <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(concept == "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)") %>%
+  mutate(Merge_name = paste(name,"E", sep =""))
+
+A <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(concept == "EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER") %>%
+  mutate(Merge_name = paste(name,"E", sep =""))
+
+Variables <- Clean_ACS_Variables(rbind(A,B)) %>%
+                mutate(Recoded = ifelse(grepl("No_schooling_completed",label),"No_School","CODE"),
+                       Recoded = ifelse(grepl("grade|Kindergarten|Nursery",label),"K-12",Recoded),
+                       Recoded = ifelse(grepl("Total_Population",label),label,Recoded),
+                       Recoded = ifelse(grepl("Bachelor|Professional|Master|Doctorate",label),"Bachelor_more",Recoded),
+                       Recoded = ifelse(grepl("Regular_high_school_diploma|high_school|GED|college|Associate",label),"High_School_No_Bachelor",Recoded),
+                       Recoded = ifelse(grepl("10,000|19,999",label),"$10,000-$19,999",Recoded),
+                       Recoded = ifelse(grepl("20,000|29,999",label),"$20,000-$29,999",Recoded),
+                       Recoded = ifelse(grepl("30,000|39,999",label),"$30,000-$39,999",Recoded),
+                       Recoded = ifelse(grepl("40,000|49,999",label),"$40,000-$49,999",Recoded),
+                       Recoded = ifelse(grepl("50,000|74,999",label),"$50,000-$74,999",Recoded),
+                       Recoded = ifelse(grepl("75,000|99,999",label),"$75,000-$99,999",Recoded),
+                       Recoded = ifelse(grepl("B19001_014|B19001_015|B19001_016|B19001_017",name),"$100,000 more",Recoded))
+
+ACS.Fixed <-  get_acs(geography = "tract", 
+                     variables = Variables$name, 
+                     state = "PA",
+                     county = "Philadelphia",
+                     output = "tidy",
+                     geometry = FALSE,
+                     year = 2019) %>% 
+  dplyr::select (-moe) %>%
+  mutate(Category = ifelse(variable %in% A$name, "Education","Income"),
+          Year = ymd("2019-01-01")) 
+
+for(i in 1:nrow(Variables)) {
+  ACS.Fixed <- ACS.Fixed %>%
+            mutate(variable = str_replace(variable,Variables$name[i],Variables$Recoded[i]))
+}
+
+ACS.Fixed <- ACS.Fixed %>%
+              group_by(GEOID,NAME,variable,Category,Year) %>%
+              summarize(estimate = sum(estimate))
+# looping years -----------------------------
+
+for(f in 1:length(Years)){
+merge <-  get_acs(geography = "tract", 
+                      variables = Variables$name, 
+                      state = "PA",
+                      county = "Philadelphia",
+                      output = "tidy",
+                      geometry = FALSE,
+                      year = 2019) %>% 
+              dplyr::select (-moe) %>%
+              mutate(Category = ifelse(variable %in% A$name, "Education","Income"),
+                     Year = ymd(paste(Years[f],"0101")))
+
+for(i in 1:nrow(Variables)) {
+  merge <- merge %>%
+    mutate(variable = str_replace(variable,Variables$name[i],Variables$Recoded[i]))
+}
+merge <- merge %>%
+  group_by(GEOID,NAME,variable,Category,Year) %>%
+  summarize(estimate = sum(estimate))
 
 
+ACS.Fixed <- rbind(ACS.Fixed,merge)
+}
 
+ACS.Long <- left_join(ACS.Long,
+              ACS.Fixed %>%
+                filter(Category == "Education") %>%
+                select(-Category) %>%
+                rename(Education = variable,
+                       Education_frequency = estimate), 
+              by = c("Year","GEOID","NAME"))
+
+
+ACS.Long <- left_join(ACS.Long,
+                      ACS.Fixed %>%
+                        filter(Category == "Income") %>%
+                        select(-Category) %>%
+                        rename(Income = variable,
+                               Income_frequency = estimate), 
+                      by = c("Year","GEOID","NAME")) %>%
+              filter(!Education == "Total_Population") %>%
+              filter(!Income == "Total_Population") %>%
+              st_as_sf()
