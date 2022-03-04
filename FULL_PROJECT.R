@@ -19,13 +19,15 @@ source("Data/IPEDS_DATA.R")
 source("Data/Carnegie_Classification.R")
 source("Data/Philly_School_metrics.R")
 source("Data/GTFS_Data.R")
-
-
-# Figures -----------------------------
-source("Plots/IPEDS_FIGS.R") #Ipeds Data
-source("Plots/Philly_k12.R") #Philly K-12 schools
-source("Plots/Census_Charts.R") #Census data
+source("Data/Knn.R")
 
 #Analysis
 source("Data_Analysis/Morans_I.R")
+source("Data_Analysis/K-clustering.R")
+
+#Figures -----------------------------
+source("Plots/Clusters.R") #Visualize clusters and other Characteristics
+source("Plots/IPEDS_FIGS.R") #Ipeds Data
+source("Plots/Philly_k12.R") #Philly K-12 schools
+source("Plots/Census_Charts.R") #Census data
  

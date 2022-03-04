@@ -10,7 +10,6 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 #Census Maps
 
 ACS.Long %>%
-  filter(Year == "2018-01-01") %>%
   filter(Race_Ethnicity == "Asian_alone") %>%
   st_as_sf() %>%
   ggplot() +

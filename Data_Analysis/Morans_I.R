@@ -25,9 +25,10 @@ ACS.Long %>%
   ggplot() +
   geom_histogram( aes(x = Frequency_log))
 
+
 df <- ACS.Long %>% 
         filter(Year == "2017-01-01") %>%
-        filter(Race_Ethnicity == unique(ACS.Long$Race_Ethnicity[2])) %>%
+        filter(Race_Ethnicity == unique(ACS.Long$Race_Ethnicity)[4]) %>%
         na.omit() %>%
         st_as_sf()
 
@@ -35,6 +36,7 @@ nb <- poly2nb(df,
                queen = TRUE)
 
 lw <- nb2listw(nb, style = "W", zero.policy = TRUE)
+
 
 #Moran's I the hard way ------------------------------
 lw <- nb2listw(nb, style = "W", zero.policy = TRUE)
@@ -52,3 +54,19 @@ coef(M1)[2]
 moran.test(df$Frequency,lw)
 MC <- moran.mc(df$Frequency,lw,nsim=599)
 plot(MC,main ="", las=1)
+
+
+
+
+#Moran's I for Point data -------------
+Moran_prep <- function(df){
+  nb <- poly2nb(df,
+                queen = TRUE)
+  
+  lw <- nb2listw(nb, style = "W", zero.policy = TRUE)
+}
+
+df <- ALL_Universities %>%
+        select(UNITID,NAME,SHORT_CARNEGIE) %>%
+        unique() 
+
