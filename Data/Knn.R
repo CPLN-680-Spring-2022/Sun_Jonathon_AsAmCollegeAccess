@@ -11,7 +11,7 @@ getwd()
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
 
-## grovery Nearest Neighbor
+## Unviersity Nearest Neighbor
 st_c <- st_coordinates
 
 nndf <- ALL_Universities 
@@ -27,18 +27,17 @@ Knn <- nnpoints %>%
                University_nn3 = nn_function(st_c(nnpoints), st_c(nndf), 3),
                University_nn4 = nn_function(st_c(nnpoints), st_c(nndf), 4),
                University_nn5 = nn_function(st_c(nnpoints), st_c(nndf), 5)) %>%
-        select(GEOID,starts_with("University")) 
+        select(GEOID,starts_with("University")) %>%
+        st_drop_geometry()
 
+Knn$University_nnAve <- rowMeans(Knn[,c(2:6)], na.rm=TRUE)
 
-ACS.Long <- left_join(ACS.Long,
-                  Knn %>%
-                      st_drop_geometry(),
-                  by = "GEOID")
-
-ACS_Cluster <- left_join(ACS_Cluster,
-                      Knn %>%
-                        st_drop_geometry(),
-                      by = "GEOID")
+join_knn <- function(df){left_join(df,
+                                   Knn, 
+                                   by = "GEOID")}
+ACS_Cluster_Group <- join_knn(ACS_Cluster_Group)
+ACS.Long <- join_knn(ACS.Long)
+ACS_Cluster <- join_knn(ACS_Cluster)
 
 
 nndf <- Philly_Education_Long %>%
@@ -55,18 +54,14 @@ Knn <- nnpoints %>%
          Tutoring_nn3 = nn_function(st_c(nnpoints), st_c(nndf), 3),
          Tutoring_nn4 = nn_function(st_c(nnpoints), st_c(nndf), 4),
          Tutoring_nn5 = nn_function(st_c(nnpoints), st_c(nndf), 5)) %>%
-  select(GEOID,starts_with(subject)) 
+  select(GEOID,starts_with(subject)) %>%
+  st_drop_geometry()
 
-ACS.Long <- left_join(ACS.Long,
-                      Knn %>%
-                        st_drop_geometry(),
-                      by = "GEOID")
+Knn$Tutoring_nnAve <- rowMeans(Knn[,c(2:6)], na.rm=TRUE)
 
-
-ACS_Cluster <- left_join(ACS_Cluster,
-                         Knn %>%
-                           st_drop_geometry(),
-                         by = "GEOID")
+ACS_Cluster_Group <- join_knn(ACS_Cluster_Group)
+ACS.Long <- join_knn(ACS.Long)
+ACS_Cluster <- join_knn(ACS_Cluster)
 
 # Distance to intervene Schools
 nnpoints <- Philadelphia_Centroids
@@ -84,33 +79,36 @@ Knn <- nnpoints %>%
          INTERVENE_nn3 = nn_function(st_c(nnpoints), st_c(nndf), 3),
          INTERVENE_nn4 = nn_function(st_c(nnpoints), st_c(nndf), 4),
          INTERVENE_nn5 = nn_function(st_c(nnpoints), st_c(nndf), 5)) %>%
-  select(GEOID,starts_with("INTERVENE")) 
+  select(GEOID,starts_with("INTERVENE")) %>%
+  st_drop_geometry()
 
+Knn$Intervene_nnAve <- rowMeans(Knn[,c(2:6)], na.rm=TRUE)
 
-ACS_Cluster <- left_join(ACS_Cluster,
-                         Knn %>%
-                           st_drop_geometry(),
-                         by = "GEOID")
+ACS_Cluster_Group <- join_knn(ACS_Cluster_Group)
+ACS.Long <- join_knn(ACS.Long)
+ACS_Cluster <- join_knn(ACS_Cluster)
 
 nndf <- Philly_Schools %>%
   filter(year == 2018) %>%
   filter(Overall.Tier == unique(Philly_Schools$Overall.Tier)[2]) %>%
   st_as_sf()
 
-## intervene Schools NN
+## Watch Schools NN
 Knn <- nnpoints %>%
   mutate(WATCH_nn1 = nn_function(st_c(nnpoints), st_c(nndf), 1),
          WATCH_nn2 = nn_function(st_c(nnpoints), st_c(nndf), 2),
          WATCH_nn3 = nn_function(st_c(nnpoints), st_c(nndf), 3),
          WATCH_nn4 = nn_function(st_c(nnpoints), st_c(nndf), 4),
          WATCH_nn5 = nn_function(st_c(nnpoints), st_c(nndf), 5)) %>%
-  select(GEOID,starts_with("WATCH")) 
+  select(GEOID,starts_with("WATCH")) %>%
+  st_drop_geometry()
+
+Knn$Watch_nnAve <- rowMeans(Knn[,c(2:6)], na.rm=TRUE)
 
 
-ACS_Cluster <- left_join(ACS_Cluster,
-                         Knn %>%
-                           st_drop_geometry(),
-                         by = "GEOID")
+ACS_Cluster_Group <- join_knn(ACS_Cluster_Group)
+ACS.Long <- join_knn(ACS.Long)
+ACS_Cluster <- join_knn(ACS_Cluster)
 
 nndf <- Philly_Schools %>%
   filter(year == 2018) %>%
@@ -124,12 +122,20 @@ Knn <- nnpoints %>%
          REINFORCE_nn3 = nn_function(st_c(nnpoints), st_c(nndf), 3),
          REINFORCE_nn4 = nn_function(st_c(nnpoints), st_c(nndf), 4),
          REINFORCE_nn5 = nn_function(st_c(nnpoints), st_c(nndf), 5)) %>%
-  select(GEOID,starts_with("REINFORCE")) 
+  select(GEOID,starts_with("REINFORCE")) %>%
+  st_drop_geometry()
+
+Knn$Reinforce_nnAve <- rowMeans(Knn[,c(2:6)], na.rm=TRUE)
 
 
-ACS_Cluster <- left_join(ACS_Cluster,
-                         Knn %>%
-                           st_drop_geometry(),
-                         by = "GEOID")
+ACS_Cluster_Group <- join_knn(ACS_Cluster_Group)
+ACS.Long <- join_knn(ACS.Long)
+ACS_Cluster <- join_knn(ACS_Cluster)
 
+ACS_Cluster_Group <- ACS_Cluster_Group %>%
+                        select(-ends_with("nn1"),
+                               -ends_with("nn2"),
+                               -ends_with("nn3"),
+                               -ends_with("nn4"),
+                               -ends_with("nn5"))
 

@@ -10,10 +10,15 @@ options(scipen =  "sf")
 getwd()
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
+#Functions -----------------
+
+
+
 # Data Import and Cleaning --------------------------------
 source("Data/ShapeFiles.R")
 source("Data/SafeGraph.R")
 source("Data/Census_Data.R")
+source("Data/ACS_Cluster.R")
 source("Data/Gmaps_Locations.R")
 source("Data/IPEDS_DATA.R")
 source("Data/Carnegie_Classification.R")
@@ -22,6 +27,7 @@ source("Data/GTFS_Data.R")
 source("Data/Knn.R")
 
 #Analysis
+source("Data_Analysis/Summary_Stats.R")
 source("Data_Analysis/Morans_I.R")
 source("Data_Analysis/K-clustering.R")
 

@@ -46,3 +46,12 @@ Philadelphia_School_District <- county_subdivisions(state = "PA",
 
 #ggplot() +
 #  geom_sf(data = Philadelphia_School_District)
+
+Philadelphia_HOLC <- st_read("https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/PAPhiladelphia1937.geojson") %>%
+                        st_intersection(Philadelphia_School_District)
+
+ggplot() +
+  geom_sf(data = Philadelphia_School_District) +
+  geom_sf(data = Philadelphia_HOLC, 
+          aes(fill = holc_grade)) +
+  mapTheme()
