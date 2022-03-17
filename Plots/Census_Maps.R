@@ -10,8 +10,7 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 #Census Maps
 
 ACS.Long %>%
-  filter(Race_Ethnicity == "Asian_alone") %>%
-  st_as_sf() %>%
+  filter(Race_Ethnicity == "Asian_alone")
   ggplot() +
   geom_sf( aes(fill = Normalize)) +
   mapTheme()

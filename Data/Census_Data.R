@@ -388,3 +388,55 @@ ACS.Long <- left_join(ACS.Long,
               filter(!Education == "Total_Population") %>%
               filter(!Income == "Total_Population") %>%
               st_as_sf()
+
+# ACS Wide for Cluster Analysis ------------------------
+A <- ACS_Variables(2019,"RACE") %>%
+      mutate(Name_Code = "Race")
+B <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(grepl("ASIAN ALONE BY SELECTED GROUPS", concept)) %>%
+  mutate(Merge_name = paste(name,"E", sep =""),
+         Name_Code = "Asian") %>%
+  slice(-1)
+C <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(concept == "HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)") %>%
+  mutate(Merge_name = paste(name,"E", sep =""),
+         Name_Code = "Income")
+
+D <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(concept == "EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER") %>%
+  mutate(Merge_name = paste(name,"E", sep =""),
+         Name_Code = "Edu_Attainment")
+
+Variables <- bind_rows(A,B,C,D)
+Variables <- Clean_ACS_Variables(Variables) %>%
+                  filter(!label == "Total_Population") %>%
+                  mutate(Full_rename = paste0(label,"_",Name_Code))
+
+ACS_Cluster <- get_acs(geography = "tract", 
+                  variables = Variables$name, 
+                  state = "PA",
+                  county = "Philadelphia",
+                  output = "wide",
+                  geometry = FALSE,
+                  year = 2019) %>% 
+            dplyr::select(!ends_with("E"))
+
+col.from <- colnames(ACS_Cluster)
+
+colnames(ACS_Cluster)
+
+cols <- Variables$Full_rename
+namestoAdd <- c("GEOID")
+cols <- append(namestoAdd, cols)
+cols.to <- append(cols, "geometry")  
+
+ACS_Cluster  <- ACS_Cluster  %>%
+  rename_at(vars(col.from), function(x) cols) %>%
+  mutate(Year = "2019-01-01")
+
