@@ -8,7 +8,7 @@ library(dplyr)
 
 df <- ACS_Cluster_Group %>%
         dplyr::select(GEOID,ends_with("Asian")) %>%
-        select(-okinwan_Asian)
+        dplyr::select(-okinwan_Asian)
 
 options(scipen = 999)
 
@@ -64,15 +64,6 @@ Philadelphia_tracts <- left_join(Philadelphia_tracts,
                           by = "GEOID") %>%
       rename(Asian_Cluster = `...3`)
 
-
-Cluster <- left_join(Philadelphia_tracts %>%
-                    select(GEOID),
-                  Cluster,
-                  by = "GEOID")
-
-ggplot() +
-  geom_sf(data = Cluster, aes(fill = fit.km$cluster)) +
-  mapTheme()
 
 #Income Cluster ----------------------
 

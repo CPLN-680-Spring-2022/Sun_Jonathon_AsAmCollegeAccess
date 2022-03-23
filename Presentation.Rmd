@@ -7,8 +7,7 @@ output:
     widescreen: true
 ---
 
-```{r setup, include=FALSE}
-
+```{r loading data, include=FALSE}
 pacman::p_load(plotly, tidyverse, DT, ggplot, sf, formattable)
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")

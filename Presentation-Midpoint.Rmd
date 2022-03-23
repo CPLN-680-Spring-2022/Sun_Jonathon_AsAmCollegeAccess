@@ -1,0 +1,215 @@
+---
+title: "Asian American College Access"
+subtitle: "Midpoint Presentation"
+author: "Jonathon Sun"
+date: "2/8/2022"
+Bibliography: "references.bib"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+```{r loading data, include=FALSE}
+source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
+
+# Data Import and Cleaning --------------------------------
+source("Data/ShapeFiles.R")
+source("Data/SafeGraph.R")
+source("Data/Census_Data.R")
+source("Data/ACS_Cluster.R")
+source("Data/Gmaps_Locations.R")
+source("Data/IPEDS_DATA.R")
+source("Data/Carnegie_Classification.R")
+source("Data/Philly_School_metrics.R")
+source("Data/GTFS_Data.R")
+source("Data/Knn.R")
+
+#Analysis
+source("Data_Analysis/Summary_Stats.R")
+source("Data_Analysis/Morans_I.R")
+source("Data_Analysis/K-clustering.R")
+
+# Figures -----------------------------
+source("Plots/Presentation_Figures.R")
+```
+
+# Introduction
+
+## Introduction
+
+<div style = "float: left; width: 40%">
+Asian American comprises a panoply of differing and unique intersectional identities, histories, and experiences, yet Asian Americans are essentialized as a group and broadly stereotyped as the model minority, which shapes information to college access and campus resources (Museus & Truong, 2009; Palmer & Maramba, 2015; Poon & Byrd, 2013). 
+</div>
+
+<div style = "float: right; width: 60%">
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Asian_Pop_Philly)
+Fig_1
+```
+</div>
+
+## Research Question
+
+What kind of educational environments do different Asian American groups exist in?
+
+  - Is there spatial clustering of Asian Americans based on more specific ethnic-racial category?
+  - How are access to educational resources spatially distributed from different Asian American ethnic-racial groups?
+
+## Bodies of Literature
+
+<div style = "float: left; width: 50%">
+
+**Theories on Urban Spaces**
+
+  - Formations of Cities
+  - Subgroup culture in Urban Spaces
+  
+**Asian Americans**
+
+  - Asian American History
+  - Geographic Differences
+  
+</div>
+  
+<div style = "float: right; width: 50%">
+**Globalization of Higher Education**
+
+  - Immigration patterns
+  - Race across Transnational Lines
+  
+**College Access Frameworks**
+  
+  - College Deserts and College Oasis
+  - Resistance and Fortressing Geographies
+
+</div>
+
+# Framework
+
+## Critical Geographic College Access (CGCA) 
+
+<div style = "float: left; width: 50%">
+
+**Hillman (2016)**
+
+Individual choices to go to college are shaped by their geographic context, which constrains the options of school context, community context, and their social habitus.
+
+</div>
+
+
+<div style = "float: right; width: 50%">
+
+**Dache-Gerbino (2016)**
+
+Critical Geographic College Access (CGCA) framework to visually show how urban development and modernization failed black communities and that locations of colleges are not just coincidences but socially constructed around a history of residential segregation. 
+
+</div>
+
+# Methods
+
+## Methods
+ - Spatial Autocorrelation
+      - local Moran's I
+ - Nearest Neighbor Analysis
+      - University
+      - Tutoring Services
+      - K-12 Schools that need intervening
+ - K-Cluster Analysis
+
+## Spatial Autocorrelation
+
+
+
+## Nearest Neighbor Analysis
+
+## K-cluster Analysis
+
+# Exploratory Data Analysis | Enrollment
+Data on enrollment in Higher Education
+
+## Overall Enrollment in Higher Education {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Enrollment_time)
+Fig_1
+
+```
+
+## Overall Enrollment in Higher Education {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(PoC_Enrollment_Time) 
+Fig_1
+```
+
+## Enrollment by Carnegie Classification {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=10}
+Fig_1 <- plotly_build(Enrollment_time_Facet_Race)
+Fig_1
+```
+# Exploratory Data Analysis | Census Data
+
+## Race Over Time {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Race_Frequency_Philly)
+Fig_1
+```
+
+## Graphing Change Over Time {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(figure2_slides)
+Fig_1
+```
+
+## Asian Ethnic {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Fig_1 <- plotly_build(Asian_Pop_Philly)
+Fig_1
+```
+
+# Exploratory Data Analysis | Geographic Contexts 
+
+## Geographic Contexts | K-12 Education Landscape {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.asp=.62, fig.width=8}
+Education_Institutions
+```
+
+## Geographic Contexts | Higher Education Landscape {.flexbox .vcenter}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Higher_Education_Institutions
+```
+
+# Methods of Analysis
+
+## Potential quantitative Methods
+
+**1. Moran's I**
+
+Use Moran's I to show how populations are clustered in Philadelphia
+
+**2. K-Cluster Analysis**
+
+Show how schools are clustered around particular areas of the city
+
+**3. Some form of Regression**
+
+Very open to suggestions and methods
+
+# Next Steps | Reviewing Literature
+
+## Next Steps
+Clustering and Moran's I are the first steps before conducting more analysis. 
+
+**Reviewing Literature**
+Based on some of the literature, I will continue to refine my research question based on what else has been done in the literature.

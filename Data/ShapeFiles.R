@@ -11,13 +11,13 @@ source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-L
 Remove <- c("OBJECTID","CBSA","NMCBSA","CBSATYPE","CSA","SLDU","SCHOOLYEAR","NECTA","NMNECTA","CD","SLDL","NMCSA","LOCALE")
 
 Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
-  select(!Remove) %>%
+  dplyr::select(!Remove) %>%
   filter(STATE == "PA") %>%
   filter(NMCNTY == "Philadelphia County") %>%
   st_as_sf()
 
 ALL_Universities <- st_read("https://opendata.arcgis.com/datasets/a15e8731a17a46aabc452ea607f172c0_0.geojson") %>%
-  select(!Remove) %>%
+  dplyr::select(!Remove) %>%
   st_as_sf()
 # TIGRIS Philadelphia Census Tracts -------------------------------
 Philadelphia_tracts <- tracts(state = "PA", county = "Philadelphia County") %>%
