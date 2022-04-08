@@ -16,7 +16,6 @@ spdep,
 spgwr,
 tmap)
 
-source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 # Log transform the population to even out the skew
 
 
@@ -48,7 +47,6 @@ moranMC
 moranMCres <- moranMC$res
 moran.plot(Variable, queenlist)
 
-plot()
 hist(moranMCres, freq = 10000000, nclass = 100)
 abline(v = moran(df$AAPI_Race, queenlist, n = length(queenlist$neighbours), S0=Szero(queenlist))$'I', col='red')
 
@@ -195,6 +193,8 @@ for(i in 3:(length(colnames(df))-1)) {
 
 # Clustering with Transportation Measures
 
+philly_roads <- roads("PA", "Philadelphia")
+
 Class <- nlevels(as.factor(GTFS_Rail_route$route_id))
 
 cc <- scales::seq_gradient_pal("#F6FF33", "#33FF52")(seq(0,1,length.out=Class))
@@ -241,7 +241,7 @@ for(i in 3:(length(colnames(df))-1)) {
             aes(fill = Clustering_cat)) +
     geom_sf(data = GTFS_Rail_route %>%
               mutate(route_id = as.factor(route_id)),
-            aes(color = route_id)) +
+            color = "red") +
     scale_colour_manual(values = cc) +
     ggnewscale::new_scale_color() +
     geom_sf(data = Universities %>%
@@ -250,10 +250,173 @@ for(i in 3:(length(colnames(df))-1)) {
               unique(),
             aes(color = SHORT_CARNEGIE)) +
     scale_colour_manual(values = ccUni) +
+    ggnewscale::new_scale_color() +  
+    geom_sf(data = philly_roads %>%
+              filter(RTTYP %in% c("I","S","U")) %>%
+              rename(Road_Type = RTTYP),
+            aes(color = Road_Type),
+            size = 1.5) +
+    ggnewscale::new_scale_color() +
+    geom_sf(data = GTFS_Rail_route %>%
+              mutate(Rail = "Rail"),
+            aes(color = Rail)) +
+    scale_color_manual(values = "purple") +
+    geom_sf(data = GTFS_Rail_points,
+            color = "Purple",
+            fill = "Purple",
+            size = 3,
+            shape = 25) +
+    ggnewscale::new_scale_color() +
+    geom_sf(data = GTFS_Bus_route %>%
+              filter(Transit_form == "Subway") %>%
+              rename(Subway = Transit_form),
+            aes(color = Subway)) +
+    scale_color_manual(values = "black") +
+    geom_sf(data = GTFS_Subway_stops_route,
+            color = "Black",
+            fill = "black",
+            size = 3,
+            shape = 25) +
     labs(title = paste0(colnames[i],":Local Moran's I")) +
     mapTheme()
   
   ggsave(filename = paste0("Data_Analysis/Figs/Transit/Clustering_Category_",colnames(df)[i],".png"), width = 10, height = 10, units = "in", plot = last_plot(), dpi = 400)
 }
 
+# Merge Cluster categories --------------
+## AAPI 
+i = 5
 
+  Variable <- as.vector(df[,i, drop = TRUE]) 
+  
+  local <- localmoran(Variable, listw = queenlist, zero.policy = FALSE)
+  quadrant <- vector(mode = 'numeric', length=323)
+  m.prop <- Variable - mean(Variable)
+  m.local <- local[,1] - mean(local[,1])
+  signif <- 0.05
+  quadrant[m.prop >0 & m.local>0]<-4 #high Variable, high clustering
+  quadrant[m.prop <0 & m.local<0]<-1 #low Variable, low clustering
+  quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
+  quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
+  quadrant[local[,5]>signif]<-0
+  
+  ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
+    rename(Clustering_cat = value) %>%
+    mutate(Clustering_cat = as.character(Clustering_cat),
+           Clustering_cat = case_when(
+             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+           Clustering_cat = as.factor(Clustering_cat)) %>%
+    rename(AAPI_Cluster = Clustering_cat)
+
+## East_Asian -----------------------  
+  i = 8
+  
+  Variable <- as.vector(df[,i, drop = TRUE]) 
+  
+  local <- localmoran(Variable, listw = queenlist, zero.policy = FALSE)
+  quadrant <- vector(mode = 'numeric', length=323)
+  m.prop <- Variable - mean(Variable)
+  m.local <- local[,1] - mean(local[,1])
+  signif <- 0.05
+  quadrant[m.prop >0 & m.local>0]<-4 #high Variable, high clustering
+  quadrant[m.prop <0 & m.local<0]<-1 #low Variable, low clustering
+  quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
+  quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
+  quadrant[local[,5]>signif]<-0
+  
+  ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
+    rename(Clustering_cat = value) %>%
+    mutate(Clustering_cat = as.character(Clustering_cat),
+           Clustering_cat = case_when(
+             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+           Clustering_cat = as.factor(Clustering_cat)) %>%
+    rename(East_Asian_Cluster = Clustering_cat)
+  
+## East_Asian -----------------------  
+  i = 9
+  
+  Variable <- as.vector(df[,i, drop = TRUE]) 
+  
+  local <- localmoran(Variable, listw = queenlist, zero.policy = FALSE)
+  quadrant <- vector(mode = 'numeric', length=323)
+  m.prop <- Variable - mean(Variable)
+  m.local <- local[,1] - mean(local[,1])
+  signif <- 0.05
+  quadrant[m.prop >0 & m.local>0]<-4 #high Variable, high clustering
+  quadrant[m.prop <0 & m.local<0]<-1 #low Variable, low clustering
+  quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
+  quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
+  quadrant[local[,5]>signif]<-0
+  
+  ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
+    rename(Clustering_cat = value) %>%
+    mutate(Clustering_cat = as.character(Clustering_cat),
+           Clustering_cat = case_when(
+             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+           Clustering_cat = as.factor(Clustering_cat)) %>%
+    rename(Filipino_Asian_Cluster = Clustering_cat)
+  
+## SouthEast_Asian -----------------------  
+  i = 19
+  
+  Variable <- as.vector(df[,i, drop = TRUE]) 
+  
+  local <- localmoran(Variable, listw = queenlist, zero.policy = FALSE)
+  quadrant <- vector(mode = 'numeric', length=323)
+  m.prop <- Variable - mean(Variable)
+  m.local <- local[,1] - mean(local[,1])
+  signif <- 0.05
+  quadrant[m.prop >0 & m.local>0]<-4 #high Variable, high clustering
+  quadrant[m.prop <0 & m.local<0]<-1 #low Variable, low clustering
+  quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
+  quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
+  quadrant[local[,5]>signif]<-0
+  
+  ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
+    rename(Clustering_cat = value) %>%
+    mutate(Clustering_cat = as.character(Clustering_cat),
+           Clustering_cat = case_when(
+             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+           Clustering_cat = as.factor(Clustering_cat)) %>%
+    rename(Southeast_Asian_Cluster = Clustering_cat)
+  
+## South_Asian -----------------------  
+  i = 18
+  
+  Variable <- as.vector(df[,i, drop = TRUE]) 
+  
+  local <- localmoran(Variable, listw = queenlist, zero.policy = FALSE)
+  quadrant <- vector(mode = 'numeric', length=323)
+  m.prop <- Variable - mean(Variable)
+  m.local <- local[,1] - mean(local[,1])
+  signif <- 0.05
+  quadrant[m.prop >0 & m.local>0]<-4 #high Variable, high clustering
+  quadrant[m.prop <0 & m.local<0]<-1 #low Variable, low clustering
+  quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
+  quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
+  quadrant[local[,5]>signif]<-0
+  
+  ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
+    rename(Clustering_cat = value) %>%
+    mutate(Clustering_cat = as.character(Clustering_cat),
+           Clustering_cat = case_when(
+             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+           Clustering_cat = as.factor(Clustering_cat)) %>%
+    rename(SouthAsian_Cluster = Clustering_cat)
+  
+  

@@ -79,6 +79,7 @@ D <- load_variables(2019,
          )) %>%
   slice(-1)
 
+
 Variables <- bind_rows(A,B,C,D)
 Variables <- Clean_ACS_Variables(Variables) %>%
   filter(!label == "Total_Population") %>%
@@ -136,3 +137,35 @@ ACS_Cluster_Group <- ACS_Cluster_Tall %>%
 #  left_join(Race %>%
 #              select(GEOID,variable,est), 
 #           by = "GEOID")
+
+# ACS Cluster Group 2 ---------------------------
+
+E <- load_variables(2019,
+                    "acs5",
+                    cache = FALSE) %>%
+  filter(name %in% c("B07011_001","B07011_006","B08121_001","B25018_001","B25031_001","B25035_001","B25071_001")) %>%
+  mutate(label = str_remove(label,"Estimate!!"),
+         label = str_remove(label, "--!!"),
+         label = str_remove(label,":"),
+         label = str_replace(label, "!!", " "))
+
+ACS_Cluster_Group_Medians <- get_acs(geography = "tract", 
+                               variables = E$name, 
+                               state = "PA",
+                               county = "Philadelphia",
+                               output = "wide",
+                               geometry = FALSE,
+                               year = 2019) %>% 
+          dplyr::select(!ends_with("E"))
+
+col.from <- colnames(ACS_Cluster_Group_Medians)
+
+colnames(ACS_Cluster_Group_Medians)
+
+cols <- E$label
+namestoAdd <- c("GEOID")
+cols <- append(namestoAdd, cols)
+cols.to <- append(cols)  
+
+ACS_Cluster_Group_Medians  <- ACS_Cluster_Group_Medians  %>%
+  rename_at(vars(col.from), function(x) cols) 

@@ -14,9 +14,9 @@ pacman::p_load(sp,ISLR,MASS,spatstat,spatial,maptools,ppp,fossil,adehabitHR,gdat
 #K-FUNCTIONS
 #What about K-functions? Of course we'll do K-functions as well!
 #Setting working directory
-setwd("D:/Dropbox/Documents/Work and School/Teaching/CPLN 671 - Statistics and Data Mining/Point Pattern Analysis/Data/K-Functions Taking Population Into Consideration")
+##setwd("D:/Dropbox/Documents/Work and School/Teaching/CPLN 671 - Statistics and Data Mining/Point Pattern Analysis/Data/K-Functions Taking Population Into Consideration")
 
-r <- raster("D:/Dropbox/Documents/Work and School/Teaching/CPLN 671 - Statistics and Data Mining/Point Pattern Analysis/Data/K-Functions Taking Population Into Consideration/popraster")
+##r <- raster("D:/Dropbox/Documents/Work and School/Teaching/CPLN 671 - Statistics and Data Mining/Point Pattern Analysis/Data/K-Functions Taking Population Into Consideration/popraster")
 #rasterimage <- as.im(X="r", W=BoundaryPolygonsOW)
 plot(r)
 
@@ -24,19 +24,28 @@ plot(r)
 Boundary <- readShapePoly("PA_Albers.shp")
 
 #Class "SpatialPolygons" holds polygon topology (without attributes)
-BoundaryPolygons <- as(Boundary, "SpatialPolygons")
-
+#BoundaryPolygons <- as(Boundary, "SpatialPolygons")
+BoundaryPolygons <- as_Spatial(Philadelphia_School_District)
 
 #The class "owin" is a way of specifying the observation window for a point pattern.
-BoundaryPolygonsOW<- as(BoundaryPolygons, "owin")
+#BoundaryPolygonsOW<- as(BoundaryPolygons, "owin")
 
+BoundaryPolygonsOW <- st_union(Philadelphia_School_District) %>%
+                        st_transform(crs = 6345) %>%
+                        as.owin()
 #Plotting the Boundary Window
 #plot(r)
-plot(BoundaryPolygonsOW)#,add=T)
+##plot(BoundaryPolygonsOW)#,add=T)
 #title(main = "Point Pattern Analysis")
 
 #Reading in the file with the points
-Pts <- read.table("Hospitals_for_R.txt", header=T, sep="\t", colClasses = c("X"="double"))
+#Pts <- read.table("Hospitals_for_R.txt", header=T, sep="\t", colClasses = c("X"="double"))
+Pts <- Universities %>%
+          dplyr::select(NAME) %>%
+          unique() %>%
+          dplyr::mutate(X = sf::st_coordinates(.)[,1],
+                        Y = sf::st_coordinates(.)[,2])
+
 #Very roughly speaking, using attach() in R is like relying on the implicit use of the 
 #most recent data set. 
 #http://www.r-bloggers.com/to-attach-or-not-attach-that-is-the-question/

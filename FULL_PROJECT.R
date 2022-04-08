@@ -28,10 +28,12 @@ source("Data/Knn.R")
 
 #Analysis
 source("Data_Analysis/Summary_Stats.R")
-source("Data_Analysis/Morans_I.R")
 source("Data_Analysis/K-clustering.R")
+source("Data_Analysis/Morans_I.R")
+source("Data_ANalysis/ANOVA.R")
 
 #Figures -----------------------------
+source("Plots/Over_Time.R")
 source("Plots/Clusters.R") #Visualize clusters and other Characteristics
 source("Plots/IPEDS_FIGS.R") #Ipeds Data
 source("Plots/Philly_k12.R") #Philly K-12 schools
