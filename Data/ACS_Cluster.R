@@ -156,14 +156,14 @@ ACS_Cluster_Group_Medians <- get_acs(geography = "tract",
                                output = "wide",
                                geometry = FALSE,
                                year = 2019) %>% 
-          dplyr::select(!ends_with("E"))
+          dplyr::select(ends_with("E"))
 
 col.from <- colnames(ACS_Cluster_Group_Medians)
 
 colnames(ACS_Cluster_Group_Medians)
 
 cols <- E$label
-namestoAdd <- c("GEOID")
+namestoAdd <- c("NAME")
 cols <- append(namestoAdd, cols)
 cols.to <- append(cols)  
 
