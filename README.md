@@ -1,6 +1,6 @@
 # Sun_Jonathon_AsAmCollegeAccess
 
-[THIS PROJECT HAS BEEN MOVED] (https://github.com/CPLN-680-Spring-2022/Sun_Jonathon_AsAmClustering)
+THIS PROJECT HAS BEEN MOVED [Link here](https://github.com/CPLN-680-Spring-2022/Sun_Jonathon_AsAmClustering)
 
 
 ## Abstract
