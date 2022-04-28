@@ -1,0 +1,281 @@
+,.y.,group1,group2,n1,n2,p,p.signif,p.adj,p.adj.signif,Variable
+1,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.0176,*,0.176,ns,Median income in the past 12 months Total
+2,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.0489,*,0.402,ns,Median number of rooms
+3,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.0337,*,0.337,ns,Median number of rooms
+4,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,4,0.0446,*,0.402,ns,Median number of rooms
+5,Values,AAPI_Cluster,SouthAsian_Cluster,7,4,0.0442,*,0.442,ns,Median gross rent as a percentage of household income
+6,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0262,*,0.236,ns,$100+K_Income
+7,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.0281,*,0.236,ns,$100+K_Income
+8,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.0157,*,0.157,ns,$50-$99k_Income
+9,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.0233,*,0.233,ns,East_Asian_Asian
+10,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0201,*,0.161,ns,South_Asian_Asian
+11,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.0331,*,0.232,ns,South_Asian_Asian
+12,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0472,*,0.425,ns,white_Race
+13,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.00557,**,0.0557,ns,Median income in the past 12 months Total
+14,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.00832,**,0.0832,ns,Median year structure built
+15,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.0019,**,0.019,*,$100+K_Income
+16,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.006,**,0.06,ns,Bachelor_more_Edu_Attainment
+17,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.00848,**,0.0848,ns,South_Asian_Asian
+18,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.00901,**,0.0848,ns,South_Asian_Asian
+19,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.00589,**,0.0589,ns,white_Race
+20,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0682,ns,0.682,ns,Median income in the past 12 months Total
+21,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.674,ns,1,ns,Median income in the past 12 months Total
+22,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.0885,ns,0.885,ns,Median income in the past 12 months Total
+23,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.363,ns,1,ns,Median income in the past 12 months Total
+24,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.336,ns,1,ns,Median income in the past 12 months Total
+25,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.354,ns,1,ns,Median income in the past 12 months Total
+26,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.285,ns,1,ns,Median income in the past 12 months Total
+27,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.0609,ns,0.609,ns,Median income in the past 12 months Total
+28,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.269,ns,1,ns,Median earnings in the past 12 months Total
+29,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.646,ns,1,ns,Median earnings in the past 12 months Total
+30,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.225,ns,1,ns,Median earnings in the past 12 months Total
+31,Values,AAPI_Cluster,SouthAsian_Cluster,7,3,0.0666,ns,0.666,ns,Median earnings in the past 12 months Total
+32,Values,East_Asian_Cluster,SouthAsian_Cluster,4,3,0.414,ns,1,ns,Median earnings in the past 12 months Total
+33,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,3,0.0758,ns,0.682,ns,Median earnings in the past 12 months Total
+34,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.36,ns,1,ns,Median earnings in the past 12 months Total
+35,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.808,ns,1,ns,Median earnings in the past 12 months Total
+36,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.284,ns,1,ns,Median earnings in the past 12 months Total
+37,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,3,5,0.286,ns,1,ns,Median earnings in the past 12 months Total
+38,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.638,ns,1,ns,Median number of rooms
+39,Values,AAPI_Cluster,SouthAsian_Cluster,7,4,0.782,ns,1,ns,Median number of rooms
+40,Values,East_Asian_Cluster,SouthAsian_Cluster,4,4,0.863,ns,1,ns,Median number of rooms
+41,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.4,ns,1,ns,Median number of rooms
+42,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.246,ns,1,ns,Median number of rooms
+43,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.171,ns,1,ns,Median number of rooms
+44,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,4,5,0.324,ns,1,ns,Median number of rooms
+45,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.556,ns,1,ns,Median gross rent Total
+46,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.14,ns,1,ns,Median gross rent Total
+47,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.0791,ns,0.791,ns,Median gross rent Total
+48,Values,AAPI_Cluster,SouthAsian_Cluster,7,4,0.889,ns,1,ns,Median gross rent Total
+49,Values,East_Asian_Cluster,SouthAsian_Cluster,4,4,0.689,ns,1,ns,Median gross rent Total
+50,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,4,0.143,ns,1,ns,Median gross rent Total
+51,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.918,ns,1,ns,Median gross rent Total
+52,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.523,ns,1,ns,Median gross rent Total
+53,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.177,ns,1,ns,Median gross rent Total
+54,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,4,5,0.826,ns,1,ns,Median gross rent Total
+55,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0754,ns,0.603,ns,Median year structure built
+56,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.182,ns,0.908,ns,Median year structure built
+57,Values,AAPI_Cluster,SouthAsian_Cluster,7,4,0.355,ns,1,ns,Median year structure built
+58,Values,East_Asian_Cluster,SouthAsian_Cluster,4,4,0.415,ns,1,ns,Median year structure built
+59,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,4,0.0534,ns,0.481,ns,Median year structure built
+60,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.12,ns,0.73,ns,Median year structure built
+61,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.736,ns,1,ns,Median year structure built
+62,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.104,ns,0.73,ns,Median year structure built
+63,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,4,5,0.597,ns,1,ns,Median year structure built
+64,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.479,ns,1,ns,Median gross rent as a percentage of household income
+65,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.213,ns,1,ns,Median gross rent as a percentage of household income
+66,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.509,ns,1,ns,Median gross rent as a percentage of household income
+67,Values,East_Asian_Cluster,SouthAsian_Cluster,4,4,0.216,ns,1,ns,Median gross rent as a percentage of household income
+68,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,4,0.712,ns,1,ns,Median gross rent as a percentage of household income
+69,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.139,ns,1,ns,Median gross rent as a percentage of household income
+70,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.507,ns,1,ns,Median gross rent as a percentage of household income
+71,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.879,ns,1,ns,Median gross rent as a percentage of household income
+72,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,4,5,0.507,ns,1,ns,Median gross rent as a percentage of household income
+73,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.105,ns,0.732,ns,$100+K_Income
+74,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.867,ns,1,ns,$100+K_Income
+75,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.375,ns,1,ns,$100+K_Income
+76,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.377,ns,1,ns,$100+K_Income
+77,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.861,ns,1,ns,$100+K_Income
+78,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.974,ns,1,ns,$100+K_Income
+79,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.264,ns,1,ns,$100+K_Income
+80,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.117,ns,0.933,ns,$50-$99k_Income
+81,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.0848,ns,0.763,ns,$50-$99k_Income
+82,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.626,ns,1,ns,$50-$99k_Income
+83,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.441,ns,1,ns,$50-$99k_Income
+84,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.907,ns,1,ns,$50-$99k_Income
+85,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.345,ns,1,ns,$50-$99k_Income
+86,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.497,ns,1,ns,$50-$99k_Income
+87,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.299,ns,1,ns,$50-$99k_Income
+88,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.134,ns,0.936,ns,$50-$99k_Income
+89,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.878,ns,1,ns,AAPI_Race
+90,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.122,ns,1,ns,AAPI_Race
+91,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.124,ns,1,ns,AAPI_Race
+92,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.127,ns,1,ns,AAPI_Race
+93,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.14,ns,1,ns,AAPI_Race
+94,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.67,ns,1,ns,AAPI_Race
+95,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.27,ns,1,ns,AAPI_Race
+96,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.269,ns,1,ns,AAPI_Race
+97,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.459,ns,1,ns,AAPI_Race
+98,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.674,ns,1,ns,AAPI_Race
+99,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.19,ns,1,ns,Bachelor_more_Edu_Attainment
+100,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.337,ns,1,ns,Bachelor_more_Edu_Attainment
+101,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.943,ns,1,ns,Bachelor_more_Edu_Attainment
+102,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.166,ns,1,ns,Bachelor_more_Edu_Attainment
+103,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.233,ns,1,ns,Bachelor_more_Edu_Attainment
+104,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.065,ns,0.585,ns,Bachelor_more_Edu_Attainment
+105,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.663,ns,1,ns,Bachelor_more_Edu_Attainment
+106,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.672,ns,1,ns,Bachelor_more_Edu_Attainment
+107,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.302,ns,1,ns,Bachelor_more_Edu_Attainment
+108,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.443,ns,1,ns,Black_Race
+109,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.27,ns,1,ns,Black_Race
+110,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.634,ns,1,ns,Black_Race
+111,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.167,ns,1,ns,Black_Race
+112,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.607,ns,1,ns,Black_Race
+113,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.935,ns,1,ns,Black_Race
+114,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.259,ns,1,ns,Black_Race
+115,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.78,ns,1,ns,Black_Race
+116,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.786,ns,1,ns,Black_Race
+117,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.802,ns,1,ns,Black_Race
+118,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.0576,ns,0.518,ns,East_Asian_Asian
+119,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.0626,ns,0.518,ns,East_Asian_Asian
+120,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.716,ns,1,ns,East_Asian_Asian
+121,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.791,ns,1,ns,East_Asian_Asian
+122,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.869,ns,1,ns,East_Asian_Asian
+123,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.355,ns,1,ns,East_Asian_Asian
+124,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.3,ns,1,ns,East_Asian_Asian
+125,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.232,ns,1,ns,East_Asian_Asian
+126,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.174,ns,1,ns,East_Asian_Asian
+127,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.282,ns,1,ns,Filipino_Asian
+128,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.204,ns,1,ns,Filipino_Asian
+129,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.681,ns,1,ns,Filipino_Asian
+130,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.134,ns,1,ns,Filipino_Asian
+131,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.744,ns,1,ns,Filipino_Asian
+132,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.87,ns,1,ns,Filipino_Asian
+133,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.0914,ns,0.914,ns,Filipino_Asian
+134,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.609,ns,1,ns,Filipino_Asian
+135,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.989,ns,1,ns,Filipino_Asian
+136,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.844,ns,1,ns,Filipino_Asian
+137,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.853,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+138,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.488,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+139,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.61,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+140,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.403,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+141,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.574,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+142,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.938,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+143,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.99,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+144,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.854,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+145,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.501,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+146,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.432,ns,1,ns,High_School_No_Bachelor_Edu_Attainment
+147,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.901,ns,1,ns,Indigenous_Race
+148,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.861,ns,1,ns,Indigenous_Race
+149,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.801,ns,1,ns,Indigenous_Race
+150,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.126,ns,1,ns,Indigenous_Race
+151,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.146,ns,1,ns,Indigenous_Race
+152,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.353,ns,1,ns,Indigenous_Race
+153,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.953,ns,1,ns,Indigenous_Race
+154,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.948,ns,1,ns,Indigenous_Race
+155,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.835,ns,1,ns,Indigenous_Race
+156,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.141,ns,1,ns,Indigenous_Race
+157,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.423,ns,1,ns,Less_$50k_Income
+158,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.83,ns,1,ns,Less_$50k_Income
+159,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.7,ns,1,ns,Less_$50k_Income
+160,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.969,ns,1,ns,Less_$50k_Income
+161,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.434,ns,1,ns,Less_$50k_Income
+162,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.816,ns,1,ns,Less_$50k_Income
+163,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.532,ns,1,ns,Less_$50k_Income
+164,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.836,ns,1,ns,Less_$50k_Income
+165,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.815,ns,1,ns,Less_$50k_Income
+166,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.539,ns,1,ns,Less_$50k_Income
+167,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.68,ns,1,ns,multiracial_Race
+168,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.211,ns,1,ns,multiracial_Race
+169,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.381,ns,1,ns,multiracial_Race
+170,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.615,ns,1,ns,multiracial_Race
+171,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.956,ns,1,ns,multiracial_Race
+172,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.388,ns,1,ns,multiracial_Race
+173,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.343,ns,1,ns,multiracial_Race
+174,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.653,ns,1,ns,multiracial_Race
+175,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.58,ns,1,ns,multiracial_Race
+176,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.675,ns,1,ns,multiracial_Race
+177,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.402,ns,1,ns,Other_Asian
+178,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.51,ns,1,ns,Other_Asian
+179,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,1,ns,1,ns,Other_Asian
+180,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.37,ns,1,ns,Other_Asian
+181,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,1,ns,1,ns,Other_Asian
+182,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,1,ns,1,ns,Other_Asian
+183,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.693,ns,1,ns,Other_Asian
+184,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.264,ns,1,ns,Other_Asian
+185,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.367,ns,1,ns,Other_Asian
+186,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.237,ns,1,ns,Other_Asian
+187,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.612,ns,1,ns,Other_Race
+188,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.228,ns,1,ns,Other_Race
+189,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.445,ns,1,ns,Other_Race
+190,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.991,ns,1,ns,Other_Race
+191,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.629,ns,1,ns,Other_Race
+192,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.244,ns,1,ns,Other_Race
+193,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.444,ns,1,ns,Other_Race
+194,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.843,ns,1,ns,Other_Race
+195,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.525,ns,1,ns,Other_Race
+196,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.472,ns,1,ns,Other_Race
+197,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.952,ns,1,ns,Some_HS_or_less_Edu_Attainment
+198,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.666,ns,1,ns,Some_HS_or_less_Edu_Attainment
+199,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.722,ns,1,ns,Some_HS_or_less_Edu_Attainment
+200,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.676,ns,1,ns,Some_HS_or_less_Edu_Attainment
+201,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.674,ns,1,ns,Some_HS_or_less_Edu_Attainment
+202,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.483,ns,1,ns,Some_HS_or_less_Edu_Attainment
+203,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.644,ns,1,ns,Some_HS_or_less_Edu_Attainment
+204,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.728,ns,1,ns,Some_HS_or_less_Edu_Attainment
+205,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.928,ns,1,ns,Some_HS_or_less_Edu_Attainment
+206,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.419,ns,1,ns,Some_HS_or_less_Edu_Attainment
+207,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.623,ns,1,ns,South_Asian_Asian
+208,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.52,ns,1,ns,South_Asian_Asian
+209,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.985,ns,1,ns,South_Asian_Asian
+210,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.54,ns,1,ns,South_Asian_Asian
+211,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.967,ns,1,ns,South_Asian_Asian
+212,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.977,ns,1,ns,South_Asian_Asian
+213,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.265,ns,1,ns,Southeast_Asian_Asian
+214,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.35,ns,1,ns,Southeast_Asian_Asian
+215,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.956,ns,1,ns,Southeast_Asian_Asian
+216,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.648,ns,1,ns,Southeast_Asian_Asian
+217,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.156,ns,1,ns,Southeast_Asian_Asian
+218,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.229,ns,1,ns,Southeast_Asian_Asian
+219,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.998,ns,1,ns,Southeast_Asian_Asian
+220,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.297,ns,1,ns,Southeast_Asian_Asian
+221,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.371,ns,1,ns,Southeast_Asian_Asian
+222,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.671,ns,1,ns,Southeast_Asian_Asian
+223,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.0646,ns,0.452,ns,white_Race
+224,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.782,ns,1,ns,white_Race
+225,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.472,ns,1,ns,white_Race
+226,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.769,ns,1,ns,white_Race
+227,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.0522,ns,0.425,ns,white_Race
+228,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.863,ns,1,ns,white_Race
+229,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.671,ns,1,ns,white_Race
+230,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.347,ns,1,ns,white_Race
+231,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.999,ns,1,ns,University_nnAve
+232,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.339,ns,1,ns,University_nnAve
+233,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.376,ns,1,ns,University_nnAve
+234,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.166,ns,1,ns,University_nnAve
+235,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.224,ns,1,ns,University_nnAve
+236,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.945,ns,1,ns,University_nnAve
+237,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.313,ns,1,ns,University_nnAve
+238,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.378,ns,1,ns,University_nnAve
+239,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.833,ns,1,ns,University_nnAve
+240,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.711,ns,1,ns,University_nnAve
+241,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.961,ns,1,ns,Tutoring_nnAve
+242,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.294,ns,1,ns,Tutoring_nnAve
+243,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.313,ns,1,ns,Tutoring_nnAve
+244,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.824,ns,1,ns,Tutoring_nnAve
+245,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.811,ns,1,ns,Tutoring_nnAve
+246,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.391,ns,1,ns,Tutoring_nnAve
+247,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.786,ns,1,ns,Tutoring_nnAve
+248,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.777,ns,1,ns,Tutoring_nnAve
+249,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.41,ns,1,ns,Tutoring_nnAve
+250,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.964,ns,1,ns,Tutoring_nnAve
+251,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.584,ns,1,ns,Intervene_nnAve
+252,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.516,ns,1,ns,Intervene_nnAve
+253,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.837,ns,1,ns,Intervene_nnAve
+254,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.278,ns,1,ns,Intervene_nnAve
+255,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.654,ns,1,ns,Intervene_nnAve
+256,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.883,ns,1,ns,Intervene_nnAve
+257,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.178,ns,1,ns,Intervene_nnAve
+258,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.491,ns,1,ns,Intervene_nnAve
+259,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.732,ns,1,ns,Intervene_nnAve
+260,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.796,ns,1,ns,Intervene_nnAve
+261,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.86,ns,1,ns,Watch_nnAve
+262,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.517,ns,1,ns,Watch_nnAve
+263,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.635,ns,1,ns,Watch_nnAve
+264,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.51,ns,1,ns,Watch_nnAve
+265,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.68,ns,1,ns,Watch_nnAve
+266,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.872,ns,1,ns,Watch_nnAve
+267,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.621,ns,1,ns,Watch_nnAve
+268,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.789,ns,1,ns,Watch_nnAve
+269,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.781,ns,1,ns,Watch_nnAve
+270,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.877,ns,1,ns,Watch_nnAve
+271,Values,AAPI_Cluster,East_Asian_Cluster,7,4,0.966,ns,1,ns,Reinforce_nnAve
+272,Values,AAPI_Cluster,Filipino_Asian_Cluster,7,2,0.227,ns,1,ns,Reinforce_nnAve
+273,Values,East_Asian_Cluster,Filipino_Asian_Cluster,4,2,0.274,ns,1,ns,Reinforce_nnAve
+274,Values,AAPI_Cluster,SouthAsian_Cluster,7,5,0.743,ns,1,ns,Reinforce_nnAve
+275,Values,East_Asian_Cluster,SouthAsian_Cluster,4,5,0.745,ns,1,ns,Reinforce_nnAve
+276,Values,Filipino_Asian_Cluster,SouthAsian_Cluster,2,5,0.169,ns,1,ns,Reinforce_nnAve
+277,Values,AAPI_Cluster,Southeast_Asian_Cluster,7,5,0.233,ns,1,ns,Reinforce_nnAve
+278,Values,East_Asian_Cluster,Southeast_Asian_Cluster,4,5,0.314,ns,1,ns,Reinforce_nnAve
+279,Values,Filipino_Asian_Cluster,Southeast_Asian_Cluster,2,5,0.741,ns,1,ns,Reinforce_nnAve
+280,Values,SouthAsian_Cluster,Southeast_Asian_Cluster,5,5,0.164,ns,1,ns,Reinforce_nnAve

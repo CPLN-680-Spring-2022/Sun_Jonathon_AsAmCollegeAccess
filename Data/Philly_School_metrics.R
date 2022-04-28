@@ -1,12 +1,4 @@
-# Datasets
-if(!require('pacman')) {install.packages('pacman')}
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate)
-
-options(scipen = 999)
-options(scipen =  "sf")
-
-source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
-
+#Philadelphia Schools data
 
 FE <- list.files("Data/Philadelphia_school_metrics")
 files <- paste0("Data/Philadelphia_school_metrics/",FE)
@@ -28,20 +20,23 @@ import_school_metric <- function(x,year){
                               }
 # I have to manually check to see what kind of codes were made because
 # I have no idea what is stored in these sheets
-#2015 and 2016 ----------------
+
+#Importing Data ------------------
+
+###2015 and 2016 ------------------------
 df <- import_school_metric(4,2015)
 colnames(df)
 bind <- import_school_metric(5,2016)
 
 df <- rbind(df,bind)
 
-#2017 -----------------
+###2017 --------------------------------
 bind <- import_school_metric(6, 2017) %>%
           select(-`ULCS Code`,-`Overall Pts Earn`,-`Overall Pts Poss`)
 
 df <- rbind(df,bind)
 
-#2018 ---------------
+###2018 ---------------
 bind <- import_school_metric(7, 2018) %>%
   select(-`ULCS Code`,-`Overall Pts Earn`,-`Overall Pts Poss`)
 
@@ -57,14 +52,17 @@ Philly_Schools <- left_join(df, Philly_Schools %>%
           by = "School")  
 
 Philly_Schools_Valid <- st_intersection(Philly_Schools%>%
-                                          st_as_sf(), Philadelphia_School_District %>%
+                                          st_as_sf(), Philadelphia_tracts %>%
                                                         select())
 
 Philly_Schools_NotValid <- Philly_Schools %>%
           filter(!School %in% Philly_Schools_Valid$School) %>%
           unique()
 
-#GeoCode Philly_Schools_NotValid ------------------------------------
+
+# Geocoding -------------------------
+
+###GeoCode Philly_Schools_NotValid ------------------------------------
 #Locations <- unique(Philly_Schools_NotValid$School)[-c(1,10,25)]
 
 #locations_LatLon <- geocode(location = Locations)
@@ -78,7 +76,8 @@ Philly_Schools_NotValid <- Philly_Schools %>%
 #         "Data/Philadelphia_Schools_Charter_Geocoded/Charter_geocoded.shp")
 
 
-# Merge geocoded data with Notvalid ------------------------------
+### Merge geocoded data with Notvalid ------------------------------
+###Geocoding Not_valid -------------------
 
 Philly_Schools_NotValid <- Philly_Schools_NotValid %>%
           select(-geometry) %>%
@@ -93,6 +92,7 @@ Philly_Schools <- rbind(Philly_Schools_Valid %>%
                           st_transform(st_crs(Universities)), 
                         Philly_Schools_NotValid %>%
                           st_transform(st_crs(Universities)))  
+
 
 # Import Asbestos ------------------------
 FE <- list.files("Data/Philadelphia_Asbestos")
@@ -118,7 +118,7 @@ Directory <- "Data/Enrollment_Demographic_Philly_Schools/Original"
 FE <- list.files(Directory)
 files <- paste0(Directory,"/",FE)
 
-# Reading in the first file to use as a test ----------------------
+### Reading in the first file to use as a test ----------------------
 df_Edit1 <- data.frame(matrix(ncol = 6, nrow = 0))
 colnames(df_Edit1) <- c("SRCSchoolCode","School_Name","Grade","Total_enrolment","Count","Percent")
 
@@ -172,7 +172,7 @@ for(i in 1:length(race_headings)){
   
 }
 
-# Reading in 2016 beyond ------------------------------------
+### Reading in 2016 beyond ------------------------------------
 
 colseq <- as.tibble(6:18) %>%
   mutate(even_odd = value%%2 == 0) %>%
@@ -204,7 +204,7 @@ f = 8
                      mutate(year = 2017),
                    df_full)
   
-# f9 --------------------------------
+### f9 --------------------------------
 
 f = 9
   df <- read_excel(files[f], sheet = 6) %>%
@@ -232,7 +232,7 @@ for(i in 1:length(race_headings)){
                      mutate(year = 2018),
                    df_full)  
   
-# f10 ----------------------------------------------
+### f10 ----------------------------------------------
   
 f = 10  
     
@@ -264,7 +264,7 @@ colseq <- as.tibble(19:32) %>%
   df_full <- rbind(df_Race%>%
                      mutate(year = 2018),
                    df_full) 
-# f11 2019 beyond -------------------
+### f11 2019 beyond -------------------
 
 f = 11
 df <- read.csv(files[f])
@@ -295,7 +295,7 @@ df <- read.csv(files[f])
                      mutate(year = 2018),
                    df_full) 
 
-# f13 2019 beyond -------------------
+### f13 2019 beyond -------------------
   
 for(f in 12:length(files)){
   df <- read.csv(files[f])
@@ -334,3 +334,11 @@ Philly_School_All <-  left_join(Philly_Schools %>%
               select(!School_Name),
            by = c("SRCSchoolCode","year")) %>%
                     mutate(Count = as.numeric(str_replace(Count,"s","-99")))
+
+#Removing anything that is not necessary to not clog up the environment ------------
+
+rm(Philly_Schools_NotValid)
+rm(df_Edit1)
+rm(df_full)
+rm(df_Race)
+rm(df_Race_Merge)

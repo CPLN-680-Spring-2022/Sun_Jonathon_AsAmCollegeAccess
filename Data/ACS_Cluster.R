@@ -165,7 +165,7 @@ colnames(ACS_Cluster_Group_Medians)
 cols <- E$label
 namestoAdd <- c("NAME")
 cols <- append(namestoAdd, cols)
-cols.to <- append(cols)  
+cols.to <- cols 
 
 ACS_Cluster_Group_Medians  <- ACS_Cluster_Group_Medians  %>%
   rename_at(vars(col.from), function(x) cols) 

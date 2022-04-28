@@ -1,7 +1,10 @@
 #Cleaning Data
 
 if(!require('pacman')) {install.packages('pacman')}
-pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate)
+pacman::p_load(opentripplanner, tidytransit, tidyverse, sf, tigris, ggmap, tidycensus, stm, readxl, lubridate, gganimate, survey, srvyr, caret, sp,
+               ISLR,MASS,spatstat,spatial,maptools,ppp,fossil,adehabitHR,gdata,raster,rgdal,geostatst, spdep, caret, tidyverse, sf, spdep, caret, ckanr,
+               grid, gridExtra, knitr, kableExtra, scales, rgdal, rgeos, spdep, spgwr, tmap, rstatix, data.table,stm)
+
 
 register_google(key = "AIzaSyDIDS0OgrYmmrJO221DhqIaEnMq9tQrMr0") 
 options(scipen = 999)

@@ -64,12 +64,12 @@ MoransIFunction <- function(df,Variable){
   }
 
 MoransIFunction(df,Variable = df$Bachelor_more_Edu_Attainment)
-MoranI
+#MoranI
 moranMC
 moranMCres
 
 MoransIFunction(df,Variable = df$University_nnAve)
-MoranI
+#MoranI
 moranMC
 moranMCres
 
@@ -175,10 +175,10 @@ for(i in 3:(length(colnames(df))-1)) {
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat))
   
   ggplot() +
@@ -230,10 +230,10 @@ for(i in 3:(length(colnames(df))-1)) {
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat))
   
   ggplot() +
@@ -304,10 +304,10 @@ i = 5
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat)) %>%
     rename(AAPI_Cluster = Clustering_cat)
 
@@ -326,15 +326,16 @@ i = 5
   quadrant[m.prop <0 & m.local>0]<-2 #low variable, high clustering
   quadrant[m.prop >0 & m.local<0]<-3 #high Variable, low clustering
   quadrant[local[,5]>signif]<-0
+
   
   ACS_Cluster_Group <- cbind(ACS_Cluster_Group,as.tibble(quadrant)) %>%
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat)) %>%
     rename(East_Asian_Cluster = Clustering_cat)
   
@@ -358,10 +359,10 @@ i = 5
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat)) %>%
     rename(Filipino_Asian_Cluster = Clustering_cat)
   
@@ -385,10 +386,10 @@ i = 5
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat)) %>%
     rename(Southeast_Asian_Cluster = Clustering_cat)
   
@@ -412,10 +413,10 @@ i = 5
     rename(Clustering_cat = value) %>%
     mutate(Clustering_cat = as.character(Clustering_cat),
            Clustering_cat = case_when(
-             Clustering_cat == "4" ~ paste0("high ", colnames[i], " high clustering"),
-             Clustering_cat == "2" ~ paste0("low ", colnames[i], " high clustering"),
-             Clustering_cat == "1" ~ paste0("low ", colnames[i]," low clustering"),
-             Clustering_cat == "3" ~ paste0("high ", colnames[i], " low clustering")),
+             Clustering_cat == "4" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "2" ~ paste0("low ", colnames(ACS_Cluster_Group)[i], " high clustering"),
+             Clustering_cat == "1" ~ paste0("low ", colnames(ACS_Cluster_Group)[i]," low clustering"),
+             Clustering_cat == "3" ~ paste0("high ", colnames(ACS_Cluster_Group)[i], " low clustering")),
            Clustering_cat = as.factor(Clustering_cat)) %>%
     rename(SouthAsian_Cluster = Clustering_cat)
   

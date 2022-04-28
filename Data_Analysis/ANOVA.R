@@ -55,15 +55,16 @@ Remove <- df %>%
             summarize(Frequency = n()) %>%
             filter(Frequency > 1)
 
-df %>% 
-  filter(GEOID %in% Remove$GEOID) %>%
-  group_by(Clusters) %>%
-  get_summary_stats(Values)
+
+Kruskal <- df %>% 
+  filter(!GEOID %in% Remove$GEOID) %>%
+  kruskal_test(Values ~ Clusters) %>%
+  mutate(Variable = unique(T_Test$variables)[1])
   
 
 Pairwise_Tests <- df %>% 
-                    filter(GEOID %in% Remove$GEOID) %>%
-                    pairwise_t_test(Values ~ Clusters) %>%
+                    filter(!GEOID %in% Remove$GEOID) %>%
+                    t_test(Values ~ Clusters, p.adjust.method = "bonferroni") %>%
                     mutate(Variable = unique(T_Test$variables)[1])
 
 
@@ -87,21 +88,50 @@ for(i in 2:length(unique(T_Test$variables))){
     summarize(Frequency = n()) %>%
     filter(Frequency > 1)
   
+  
+  merge <- df %>% 
+    filter(!GEOID %in% Remove$GEOID) %>%
+    kruskal_test(Values ~ Clusters) %>%
+    mutate(Variable = unique(T_Test$variables)[i])
+  
+  Kruskal <- rbind(Kruskal, merge)
+  
+}
+
+
+
+for(i in 2:length(unique(T_Test$variables))){
+  
+  if( i == 2) {
+    next
+  }
+  
+  df <- T_Test %>%
+    ungroup() %>%
+    dplyr::select(-c("NAME")) %>%
+    filter(Type_of_Cluster == unique(T_Test$Type_of_Cluster)[3]) %>%
+    filter(variables == unique(T_Test$variables)[i]) %>%
+    na.omit()
+  
+  Remove <- df %>%
+    group_by(GEOID) %>%
+    summarize(Frequency = n()) %>%
+    filter(Frequency > 1)
+  
   df %>% 
-    filter(GEOID %in% Remove$GEOID) %>%
+    filter(!GEOID %in% Remove$GEOID) %>%
     group_by(Clusters) %>%
     get_summary_stats(Values)
   
   
   merge <- df %>% 
-            filter(GEOID %in% Remove$GEOID) %>%
-            pairwise_t_test(Values ~ Clusters) %>%
-            mutate(Variable = unique(T_Test$variables)[i])
+    filter(!GEOID %in% Remove$GEOID) %>%
+    pairwise_t_test(Values ~ Clusters) %>%
+    mutate(Variable = unique(T_Test$variables)[i])
   
   Pairwise_Tests <- rbind(Pairwise_Tests, merge)
   
 }
-
 #### Census tract demographics --------------------------------
 
 T_Test <- ACS_Cluster_Group %>%
@@ -160,14 +190,8 @@ for(i in 1:length(unique(T_Test$variables))){
     summarize(Frequency = n()) %>%
     filter(Frequency > 1)
   
-  df %>% 
-    filter(GEOID %in% Remove$GEOID) %>%
-    group_by(Clusters) %>%
-    get_summary_stats(Values)
-  
-  
   merge <- df %>% 
-    filter(GEOID %in% Remove$GEOID) %>%
+    filter(!GEOID %in% Remove$GEOID) %>%
     pairwise_t_test(Values ~ Clusters) %>%
     mutate(Variable = unique(T_Test$variables)[i])
   
@@ -176,5 +200,37 @@ for(i in 1:length(unique(T_Test$variables))){
 }
 
 write.csv(Pairwise_Tests %>%
-            arrange(p.signif),"Data_Analysis/Pairwise_Ttest.csv")
+            arrange(p.signif),"Data_Analysis/Pairwise_Ttest_4-11-2022.csv")
+
+
+for(i in 1:length(unique(T_Test$variables))){
+  
+  if( i == 2) {
+    next
+  }
+  
+  df <- T_Test %>%
+    ungroup() %>%
+    dplyr::select(-c("NAME")) %>%
+    filter(Type_of_Cluster == unique(T_Test$Type_of_Cluster)[3]) %>%
+    filter(variables == unique(T_Test$variables)[i]) %>%
+    na.omit()
+  
+  Remove <- df %>%
+    group_by(GEOID) %>%
+    summarize(Frequency = n()) %>%
+    filter(Frequency > 1)
+  
+  
+  merge <- df %>% 
+    filter(!GEOID %in% Remove$GEOID) %>%
+    kruskal_test(Values ~ Clusters) %>%
+    mutate(Variable = unique(T_Test$variables)[i])
+  
+  Kruskal <- rbind(Kruskal, merge)
+  
+}
+
+write.csv(Kruskal %>%
+            arrange(p),"Data_Analysis/Kruskal_4-11-2022.csv")
 
