@@ -1,5 +1,8 @@
 # Sun_Jonathon_AsAmCollegeAccess
 
+[THIS PROJECT HAS BEEN MOVED] (https://github.com/CPLN-680-Spring-2022/Sun_Jonathon_AsAmClustering)
+
+
 ## Abstract
 Asian American comprises a panoply of differing and unique intersectional identities, histories, and experiences, yet Asian Americans are essentialized as a group and broadly stereotyped as the model minority, which shapes information to college access and campus resources (Museus & Truong, 2009; Palmer & Maramba, 2015; Poon & Byrd, 2013). Scholars and researchers have frequently called for the disaggregation of Asian American data to ensure that ethnic minorities are supported within the Asian American racial category (Museus & Truong, 2009). 
 In the pursuit of data disaggregation, I hope to map the different experiences of Asian American ethnic groups across Philadelphia and their access to higher education utilizing K-clustering and Moran’s I. K-cluster analysis will be used to show how different Asian American groups are different distributed across Philadelphia. Moran’s I will be used to show how different resources are distributed across Philadelphia; for example, tutoring services, higher education institutions, and conditions of k-12 schools. Overall, I argue that Asian Americans have a variety of different educational resources, and as such public policy should better distribute these resources.
